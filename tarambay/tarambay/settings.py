@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_extensions',
     'rest_framework',
+    'rest_framework_swagger',
     'tagging',
     'api',
     'tarambay.events',
@@ -136,3 +137,5 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'URL_FIELD_NAME': 'self',
 }
+
+LOGIN_REDIRECT_URL = '/'
