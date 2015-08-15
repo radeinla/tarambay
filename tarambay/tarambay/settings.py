@@ -55,8 +55,6 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'tarambay.urls'
 
-print normpath(join(BASE_DIR, 'templates'))
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
