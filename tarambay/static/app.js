@@ -96,8 +96,18 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
               draggable: false,
               title: response.data.results[i].title
             });
-            marker.addListener('click', function() {
-              //TODO: open dialog with event info
+            marker.addListener('click', function(event) {
+              //open dialog with event info
+              $mdDialog.show({
+                controller: ShowEventController,
+                templateUrl: 'showEventDialog.tmpl.html',
+                parent: angular.element(document.body),
+                targetEvent: event,
+                clickOutsideToClose:true,
+                locals: {
+                  selectedEvent: self.allEvents[i]
+                }
+              });
             });
           };
           console.log(self.allEvents);
@@ -112,3 +122,16 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
 
 });
 
+function ShowEventController($scope, $mdDialog, selectedEvent) {
+  $scope.selectedEvent = selectedEvent;
+
+  $scope.closeShowEventDialog = function() {
+    $mdDialog.cancel();
+  };
+  $scope.joinEvent = function(event) {
+    console.log('joinEvent', event);
+    //TODO: join event
+    //TODO: show toast: successful/error
+    $mdDialog.hide();
+  }
+};
