@@ -1,6 +1,6 @@
 //alert('Hello world!');
 
-angular.module('tarambayApp', ['ngMaterial'])
+angular.module('tarambayApp', ['ngMaterial', 'ngMap'])
 .controller('tarambayAppController', function($scope, $mdDialog) {
   $scope.openAddEventDialog = function(ev) {
     $mdDialog.show({
