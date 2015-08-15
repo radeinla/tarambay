@@ -9,6 +9,10 @@ class Category(models.Model):
     slug = models.SlugField(_('Slug'), max_length=255, db_index=True,
                             editable=False)
 
+    class Meta:
+        verbose_name = _('Category')
+        verbose_name_plural = _('Categories')
+
 
 class Location(models.Model):
     latitude = models.DecimalField(_('Latitude'), decimal_places=6,
