@@ -11,27 +11,29 @@
 				%h1{class:'title'}
 					Tarambay!
 		</md-toolbar>
-		%div{layout:"row", 'layout-align':'center center', 'layout-margin':None}
+		%div{layout:"row", 'layout-align':'center center'}
 			%div#map-background{'map':None, 'center':"41,-87", 'zoom':"3"}
-			<md-card flex="80" class="search-container">
-				<md-card-content>
-					%div{layout:'column', 'ng-controller':'SearchFormController as searchForm'}
-						<md-input-container flex class="md-icon-float">
-							%label
-								Search Events
-							<md-icon md-svg-src="/static/img/icons/magnify.svg" class="search"></md-icon>
-							%input{ng-model:"searchForm.params.query"}
-						</md-input-container>
-				</md-card-content>
-			</md-card>
-			%div
-				<md-button class="md-fab" aria-label="Add Event" ng-click="tarambay.toggleAddEvent()">
-					<md-icon md-svg-src="/static/img/icons/plus.svg"></md-icon>
-				</md-button>
+			%div{layout:"column", flex:"100", class:"search-container"}
+				%div{layout:"row", 'layout-align':'center center'}
+					<md-card flex="70" >
+						<md-card-content>
+							%div{layout:'column', 'ng-controller':'SearchFormController as searchForm'}
+								<md-input-container flex class="md-icon-float">
+									%label
+										Search Events
+									<md-icon md-svg-src="/static/img/icons/magnify.svg" class="search"></md-icon>
+									%input{'ng-model':"searchForm.params.query"}
+								</md-input-container>
+						</md-card-content>
+					</md-card>
+					%div{flex:"10"}
+						<md-button class="md-fab" aria-label="Add Event" ng-click="tarambay.toggleAddEvent()">
+							<md-icon md-svg-src="/static/img/icons/plus.svg"></md-icon>
+						</md-button>
 
-		%div{layout:"row", layout-align:"center center", class:'add-event-container', }
+		%div{layout:"row", 'layout-align':"center center", class:'add-event-container ng-hide', 'ng-show':"tarambay.addEventVisible"}
 			%div{layout:"column", 'layout-fill':None, flex:"70"}
-				<md-card class="ng-hide" ng-show="tarambay.addEventVisible">
+				<md-card>
 					<md-card-content>
 						%form{ng-submit:"tarambay.saveEvent()"}
 							<md-toolbar>
