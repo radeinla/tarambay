@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions, viewsets
 
-from .serializers import ProfileSerializer, UserSerializer
-from api.permissions import IsObjectUser
+from .serializers import ProfileSerializer, RegisterSerializer, UserSerializer
+from api.permissions import IsAnonUser, IsObjectUser
 from tarambay.users.models import User
 
 
@@ -20,3 +20,8 @@ class ProfileView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class RegisterView(generics.CreateAPIView):
+    serializer_class = RegisterSerializer
+    permission_classes = (IsAnonUser,)
