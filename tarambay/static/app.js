@@ -1,6 +1,6 @@
 //alert('Hello world!');
 
-angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker'])
+angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ngMap'])
 .config(['$mdThemingProvider', function($mdThemingProvider) {
   $mdThemingProvider.theme('default').primaryPalette('purple');
 }])
