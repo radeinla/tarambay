@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from tarambay.events.models import Category, Event
+from tarambay.events.models import Category, Event, Location
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
@@ -14,9 +14,14 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = ('latitude', 'longitude')
+
+
 class EventSerializer(serializers.HyperlinkedModelSerializer):
-    category = serializers.SerializerMethodField()
-    location = serializers.SerializerMethodField()
+    location = LocationSerializer()
     id = serializers.UUIDField(source='uuid')
 
     class Meta:
@@ -26,10 +31,9 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             'self': {'lookup_field': 'uuid'},
             'admin': {'lookup_field': 'uuid'},
+            'category': {'lookup_field': 'uuid'},
         }
 
-    def get_category(self, obj):
-        return obj.category.name
 
-    def get_location(self, obj):
-        return "{}, {}".format(obj.location.latitude, obj.location.longitude)
+class CreateEventSerializer(EventSerializer):
+    location = serializers.CharField(write_only=True)
