@@ -57,12 +57,20 @@ class CreateEventSerializer(EventSerializer):
                 data['longitude'] = result.longitude
             else:
                 raise serializers.ValidationError(_("That is not a valid location."))
-        else:
+        elif not self.partial:
             latitude = data.get('latitude', None)
             longitude = data.get('longitude', None)
             if not latitude or not longitude:
                 raise serializers.ValidationError(_(
                     "Either a valid address for location should be provided or"
                     " latitude and longitude should be provided."))
+        if self.partial:
+            return data
         data['admin'] = self.context['request'].user
         return data
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance

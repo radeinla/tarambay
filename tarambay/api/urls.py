@@ -13,4 +13,5 @@ router.register('users', UserViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
+    url(r'^docs/', include('rest_framework_swagger.urls')),
 ]
