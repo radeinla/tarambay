@@ -37,6 +37,7 @@ class Event(models.Model):
                                      blank=True)
     going = models.ManyToManyField('users.Invited', related_name='going_events',
                                    blank=True)
+    private = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} start: {} end: {}".format(self.title, self.start, self.end)
