@@ -22,9 +22,10 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Event
         fields = ('id', 'self', 'category', 'title', 'description', 'location',
-                  'start', 'end')
+                  'start', 'end', 'admin')
         extra_kwargs = {
-            'self': {'lookup_field': 'uuid'}
+            'self': {'lookup_field': 'uuid'},
+            'admin': {'lookup_field': 'uuid'},
         }
 
     def get_category(self, obj):
