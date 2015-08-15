@@ -8,7 +8,6 @@ from api.users.views import ProfileView, UserViewSet
 router = routers.DefaultRouter()
 router.register('categories', CategoryViewSet)
 router.register('events', EventViewSet)
-# router.register('users/profile', ProfileViewSet)
 router.register('users', UserViewSet)
 
 
