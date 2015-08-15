@@ -15,6 +15,9 @@ class Category(models.Model):
         verbose_name = _('Category')
         verbose_name_plural = _('Categories')
 
+    def __str__(self):
+        return self.name
+
 
 class Event(models.Model):
     admin = models.ForeignKey('users.User', related_name='events')
@@ -31,6 +34,9 @@ class Event(models.Model):
     tags = TagField()
     uuid = UUIDField(unique=True)
     invited = models.ManyToManyField('users.Invited', related_name='invited_events',
-                                     blank=True, null=True)
+                                     blank=True)
     going = models.ManyToManyField('users.Invited', related_name='going_events',
-                                   blank=True, null=True)
+                                   blank=True)
+
+    def __str__(self):
+        return "{} start: {} end: {}".format(self.title, self.start, self.end)
