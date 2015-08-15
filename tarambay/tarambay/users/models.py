@@ -59,3 +59,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Invited(models.Model):
     user = models.OneToOneField('users.User', null=True, blank=True)
     email = models.EmailField(_('email address'), null=True, blank=True)
+
+    def __str__(self):
+        if self.user:
+            return self.user.username
+        else:
+            return self.email
