@@ -12,7 +12,7 @@
 		</md-toolbar>
 		%div{layout:"row", 'layout-align':'center center', 'layout-margin':None, 'map-lazy-load': "http://maps.google.com/maps/api/js"}
 			%div#map-background{'map':None, 'center':"41,-87", 'zoom':"3"}
-			<md-card flex="80">
+			<md-card flex="80" class="search-container">
 				<md-card-content>
 					%div{layout:'column', 'ng-controller':'SearchFormController as searchForm'}
 						<md-input-container flex class="md-icon-float">
@@ -29,7 +29,7 @@
 				</md-button>
 
 		%div{layout:"row", layout-align:"center center"}
-			%div{layout:"column", 'layout-fill':None, flex:"70"}
+			%div{layout:"column", 'layout-fill':None, flex:"70", class:'add-event-container'}
 				<md-card class="ng-hide" ng-show="tarambay.addEventVisible">
 					<md-card-content>
 						%form{ng-submit:"tarambay.saveEvent()"}
