@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'tagging',
     'api',
+    'tarambay.events',
 )
 
 MIDDLEWARE_CLASSES = (
