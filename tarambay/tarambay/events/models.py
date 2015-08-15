@@ -16,24 +16,21 @@ class Category(models.Model):
         verbose_name_plural = _('Categories')
 
 
-class Location(models.Model):
-    latitude = models.DecimalField(_('Latitude'), decimal_places=6,
-                                   max_digits=9, blank=True, null=True)
-    longitude = models.DecimalField(_('Longitude'), decimal_places=6,
-                                    max_digits=9, blank=True, null=True)
-
-
 class Event(models.Model):
     admin = models.ForeignKey('users.User', related_name='events')
     category = models.ForeignKey('events.Category', related_name='events',
                                     verbose_name=_('Category'))
-    location = models.ForeignKey('events.Location', related_name='events',
-                                    verbose_name=_('Location'))
     title = models.CharField(_('Title'), max_length=255, db_index=True)
     description = models.TextField(_('Description'), blank=True)
     start = models.DateTimeField(_('Start'))
     end = models.DateTimeField(_('End'))
+    latitude = models.DecimalField(_('Latitude'), decimal_places=6,
+                                   max_digits=9)
+    longitude = models.DecimalField(_('Longitude'), decimal_places=6,
+                                    max_digits=9)
     tags = TagField()
     uuid = UUIDField(unique=True)
-    invited = models.ManyToManyField('users.Invited', related_name='invited_events')
-    going = models.ManyToManyField('users.Invited', related_name='going_events')
+    invited = models.ManyToManyField('users.Invited', related_name='invited_events',
+                                     blank=True, null=True)
+    going = models.ManyToManyField('users.Invited', related_name='going_events',
+                                   blank=True, null=True)
