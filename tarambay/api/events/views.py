@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import permissions, viewsets
 
 from .serializers import CategorySerializer, CreateEventSerializer, EventSerializer
@@ -13,7 +14,7 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class EventViewSet(viewsets.ModelViewSet):
-    queryset = Event.objects.all()
+    queryset = Event.objects.none()
     serializer_class = EventSerializer
     create_serializer_class = CreateEventSerializer
     lookup_field = 'uuid'
@@ -25,3 +26,10 @@ class EventViewSet(viewsets.ModelViewSet):
             return self.create_serializer_class
         else:
             return self.serializer_class
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated():
+            return Event.objects.filter(Q(private=False) | Q(invited__user=user)).order_by('-end', '-start')
+        else:
+            return Event.objects.filter(private=False).order_by('-end', '-start')
