@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'tagging',
     'api',
     'tarambay.events',
+    'tarambay.users',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -120,6 +121,8 @@ STATICFILES_DIRS = (
     normpath(join(BASE_DIR, 'static')),
 )
 
+# use custom user model
+AUTH_USER_MODEL = 'users.User'
 
 # Django Rest Framework settings
 REST_FRAMEWORK = {
