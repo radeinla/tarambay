@@ -22,4 +22,6 @@ from django.views.generic import TemplateView
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name="index.haml")),
     url(r'^admin/', include(admin.site.urls)),
+    # for rest framework browseable api
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
