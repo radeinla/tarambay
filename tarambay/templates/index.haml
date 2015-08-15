@@ -27,28 +27,59 @@
 				</md-button>
 
 		%script{type:"text/ng-template", id:"addEventDialog.tmpl.html"}
-			<md-dialog aria-label="Add Event">
-			%form
+			<md-dialog aria-label="Add Event" flex=90>
+			%form{ng-submit:"saveEvent()"}
 				<md-toolbar>
 					%div{class:"md-toolbar-tools"}
 						%h2
 							Add Event
 						%span{flex:None}
-						<md-button class="md-icon-button" ng-click="cancel()">
+						<md-button class="md-icon-button" type="button" ng-click="cancel()">
 							<md-icon md-svg-src="/static/img/icons/close.svg" aria-label="Close dialog"></md-icon>
 						</md-button>
 				</md-toolbar>
 				<md-dialog-content>
-					%div
-
+					%div{layout:'column'}
+						<md-select ng-model="params.categories" placeholder="Categories">
+							<md-option ng-value="category.title" data-ng-repeat="category in categories">{{ category.title }}</md-option>
+						</md-select>
+						<md-input-container>
+							%label
+								Title
+							%input{ng-model:"params.title"}
+						</md-input-container>
+						<md-input-container>
+							%label
+								Location
+							%input{ng-model:"params.location"}
+						</md-input-container>
+						<md-input-container>
+							%label
+								Start
+							%input{ng-model:"params.start"}
+						</md-input-container>
+						<md-input-container>
+							%label
+								End
+							%input{ng-model:"params.end"}
+						</md-input-container>
+						<md-chips ng-model="tags" placeholder="Enter a tag" delete-button-label="Remove Tag" delete-hint="Press delete to remove tag" secondary-placeholder="Enter a tag">
+						</md-chips>
+						%div
+							%p
+								Set privacy:
+							<md-radio-group ng-model="params.private">
+								<md-radio-button data-ng-value="true" class="md-primary">Private</md-radio-button>
+								<md-radio-button data-ng-value="false">Public</md-radio-button>
+							</md-radio-group>
 				</md-dialog-content>
 
 				%div{class:"md-actions", layout:"row"}
 					<span flex></span>
-					<md-button ng-click="cancel()">
+					<md-button type="button" ng-click="cancel()">
 						Cancel
 					</md-button>
-					<md-button ng-click="save()">
+					<md-button>
 						Save
 					</md-button>
 			</md-dialog>

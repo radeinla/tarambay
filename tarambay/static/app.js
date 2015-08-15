@@ -8,12 +8,15 @@ angular.module('tarambayApp', ['ngMaterial'])
       templateUrl: 'addEventDialog.tmpl.html',
       parent: angular.element(document.body),
       targetEvent: ev,
-      clickOutsideToClose:true
+      clickOutsideToClose:true,
+      resolve: {
+        //TODO: get categories
+      }
     })
-    .then(function(answer) {
-      //
+    .then(function() {
+      console.log('dialog hide');
     }, function() {
-      //
+      console.log('dialog cancel');
     });
   };
 })
@@ -23,11 +26,19 @@ angular.module('tarambayApp', ['ngMaterial'])
 });
 
 function AddEventDialogController($scope, $mdDialog) {
+  $scope.params = {
+    private: true,
+  };
+  $scope.tags = [];
+
   $scope.cancel = function() {
     $mdDialog.cancel();
   };
 
-  $scope.save = function() {
+  $scope.saveEvent = function() {
     //TODO: save
+    console.log('saveEvent');
+    console.log($scope.params);
+    $mdDialog.hide();
   };
 }
