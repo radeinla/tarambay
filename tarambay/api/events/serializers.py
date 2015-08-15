@@ -1,6 +1,8 @@
+from django.utils.translation import ugettext_lazy as _
+from pygeocoder import Geocoder
 from rest_framework import serializers
 
-from tarambay.events.models import Category, Event, Location
+from tarambay.events.models import Category, Event
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
@@ -14,20 +16,13 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
-class LocationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Location
-        fields = ('latitude', 'longitude')
-
-
 class EventSerializer(serializers.HyperlinkedModelSerializer):
-    location = LocationSerializer()
-    id = serializers.UUIDField(source='uuid')
+    id = serializers.UUIDField(source='uuid', read_only=True)
 
     class Meta:
         model = Event
-        fields = ('id', 'self', 'category', 'title', 'description', 'location',
-                  'start', 'end', 'admin')
+        fields = ('id', 'self', 'category', 'title', 'description', 'latitude',
+                  'longitude', 'start', 'end', 'admin')
         extra_kwargs = {
             'self': {'lookup_field': 'uuid'},
             'admin': {'lookup_field': 'uuid'},
@@ -36,4 +31,38 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CreateEventSerializer(EventSerializer):
-    location = serializers.CharField(write_only=True)
+    location = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    latitude = serializers.CharField(required=False, allow_blank=True)
+    longitude = serializers.CharField(required=False, allow_blank=True)
+
+    class Meta:
+        model = Event
+        fields = ('id', 'self', 'category', 'title', 'description', 'location',
+                  'latitude', 'longitude', 'start', 'end',)
+        extra_kwargs = {
+            'self': {'lookup_field': 'uuid'},
+            'admin': {'lookup_field': 'uuid'},
+            'category': {'lookup_field': 'uuid'},
+        }
+
+    def validate(self, data):
+        """
+        Check that location is a valid address
+        """
+        location = data.pop('location', None)
+        if location:
+            result = Geocoder.geocode(location)
+            if result.valid_address:
+                data['latitude'] = result.latitude
+                data['longitude'] = result.longitude
+            else:
+                raise serializers.ValidationError(_("That is not a valid location."))
+        else:
+            latitude = data.get('latitude', None)
+            longitude = data.get('longitude', None)
+            if not latitude or not longitude:
+                raise serializers.ValidationError(_(
+                    "Either a valid address for location should be provided or"
+                    " latitude and longitude should be provided."))
+        data['admin'] = self.context['request'].user
+        return data
