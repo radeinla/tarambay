@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from django_extensions.db.fields import UUIDField
 from tagging.fields import TagField
 
 
@@ -8,6 +9,7 @@ class Category(models.Model):
     description = models.TextField(_('Description'), blank=True)
     slug = models.SlugField(_('Slug'), max_length=255, db_index=True,
                             editable=False)
+    uuid = UUIDField(unique=True)
 
     class Meta:
         verbose_name = _('Category')
@@ -31,3 +33,4 @@ class Event(models.Model):
     start = models.DateTimeField(_('Start'))
     end = models.DateTimeField(_('End'))
     tags = TagField()
+    uuid = UUIDField(unique=True)
