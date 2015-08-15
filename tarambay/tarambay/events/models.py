@@ -24,10 +24,10 @@ class Location(models.Model):
 
 
 class Event(models.Model):
-    admin = models.OneToOneField('users.User', related_name='admin')
-    category = models.OneToOneField('events.Category', related_name='category',
+    admin = models.ForeignKey('users.User', related_name='events')
+    category = models.ForeignKey('events.Category', related_name='events',
                                     verbose_name=_('Category'))
-    location = models.OneToOneField('events.Location', related_name='location',
+    location = models.ForeignKey('events.Location', related_name='events',
                                     verbose_name=_('Location'))
     title = models.CharField(_('Title'), max_length=255, db_index=True)
     description = models.TextField(_('Description'), blank=True)
@@ -35,3 +35,5 @@ class Event(models.Model):
     end = models.DateTimeField(_('End'))
     tags = TagField()
     uuid = UUIDField(unique=True)
+    invited = models.ManyToManyField('users.Person', related_name='invited_events')
+    going = models.ManyToManyField('users.Person', related_name='going_events')
