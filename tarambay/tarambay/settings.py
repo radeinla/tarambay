@@ -73,6 +73,8 @@ TEMPLATES = [
             'loaders': [
                 'hamlpy.template.loaders.HamlPyFilesystemLoader',
                 'hamlpy.template.loaders.HamlPyAppDirectoriesLoader',
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
             ],
         },
     },
@@ -110,6 +112,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = normpath(join(BASE_DIR, 'static')),
+
 
 # Django Rest Framework settings
 REST_FRAMEWORK = {
