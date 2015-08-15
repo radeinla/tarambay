@@ -24,6 +24,7 @@ class Location(models.Model):
 
 
 class Event(models.Model):
+    admin = models.OneToOneField('users.User', related_name='admin')
     category = models.OneToOneField('events.Category', related_name='category',
                                     verbose_name=_('Category'))
     location = models.OneToOneField('events.Location', related_name='location',
