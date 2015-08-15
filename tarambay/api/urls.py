@@ -2,7 +2,7 @@ from django.conf.urls import include, url
 from rest_framework import routers
 
 from api.events.views import CategoryViewSet, EventViewSet
-from api.users.views import UserViewSet
+from api.users.views import ProfileView, RegisterView, UserViewSet
 
 
 router = routers.DefaultRouter()
@@ -12,6 +12,8 @@ router.register('users', UserViewSet)
 
 
 urlpatterns = [
+    url(r'^users/profile', ProfileView.as_view(), name='user-profile'),
+    url(r'^users/register', RegisterView.as_view()),
     url(r'^', include(router.urls)),
     url(r'^docs/', include('rest_framework_swagger.urls')),
 ]

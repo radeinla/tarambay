@@ -18,3 +18,16 @@ class EventPermission(permissions.BasePermission):
             return True
         else:
             return obj.admin == request.user
+
+
+class IsObjectUser(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user
+
+
+class IsAnonUser(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_authenticated():
+            return False
+        else:
+            return True

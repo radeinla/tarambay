@@ -28,11 +28,15 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
 
     this.categoriesPromise = $http.get('/api/categories')
       .then(function(response) {
-        console.log(response.data.results);
         self.categories = response.data.results;
       }, function(error) {
         //TODO: error
       });
+
+    $scope.$on('mapInitialized', function(event, map) {
+      $scope.map = map;
+      self.updateMapPins();
+    });
 
     this.loadCategories = function() {
       return this.categoriesPromise;
@@ -78,6 +82,29 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
       console.log('cancelAddEvent');
       this.hideAddEvent();
     };
+
+    self.updateMapPins = function() {
+      $http.get('/api/events')
+        .then(function(response) {
+          console.log(response.data.results)
+          self.allEvents = [];
+          for (var i=0; i<response.data.results.length; i++) {
+            self.allEvents.push(new google.maps.LatLng(response.data.results[i].latitude, response.data.results[i].longitude));
+            var marker = new google.maps.Marker({
+              position: self.allEvents[i],
+              map: $scope.map,
+              draggable: false,
+              title: response.data.results[i].title
+            });
+            marker.addListener('click', function() {
+              //TODO: open dialog with event info
+            });
+          };
+          console.log(self.allEvents);
+        }, function(error){
+          //TODO: error
+        })
+    }
   }
 ])
 

@@ -22,7 +22,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Event
         fields = ('id', 'self', 'category', 'title', 'description', 'latitude',
-                  'longitude', 'start', 'end', 'admin')
+                  'longitude', 'start', 'end', 'admin', 'tags')
         extra_kwargs = {
             'self': {'lookup_field': 'uuid'},
             'admin': {'lookup_field': 'uuid'},
@@ -38,7 +38,7 @@ class CreateEventSerializer(EventSerializer):
     class Meta:
         model = Event
         fields = ('id', 'self', 'category', 'title', 'description', 'location',
-                  'latitude', 'longitude', 'start', 'end',)
+                  'latitude', 'longitude', 'start', 'end', 'tags')
         extra_kwargs = {
             'self': {'lookup_field': 'uuid'},
             'admin': {'lookup_field': 'uuid'},
