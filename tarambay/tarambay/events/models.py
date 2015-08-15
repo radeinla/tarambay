@@ -35,5 +35,5 @@ class Event(models.Model):
     end = models.DateTimeField(_('End'))
     tags = TagField()
     uuid = UUIDField(unique=True)
-    invited = models.ManyToManyField('users.Person', related_name='invited_events')
-    going = models.ManyToManyField('users.Person', related_name='going_events')
+    invited = models.ManyToManyField('users.Invited', related_name='invited_events')
+    going = models.ManyToManyField('users.Invited', related_name='going_events')

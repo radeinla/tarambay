@@ -8,10 +8,21 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('events', '0006_auto_20150815_1311'),
+        ('users', '0002_invited'),
+        ('events', '0005_auto_20150815_1303'),
     ]
 
     operations = [
+        migrations.AddField(
+            model_name='event',
+            name='going',
+            field=models.ManyToManyField(related_name='going_events', to='users.Invited'),
+        ),
+        migrations.AddField(
+            model_name='event',
+            name='invited',
+            field=models.ManyToManyField(related_name='invited_events', to='users.Invited'),
+        ),
         migrations.AlterField(
             model_name='event',
             name='admin',
@@ -21,16 +32,6 @@ class Migration(migrations.Migration):
             model_name='event',
             name='category',
             field=models.ForeignKey(related_name='events', verbose_name='Category', to='events.Category'),
-        ),
-        migrations.AlterField(
-            model_name='event',
-            name='going',
-            field=models.ManyToManyField(related_name='going_events', to='users.Person'),
-        ),
-        migrations.AlterField(
-            model_name='event',
-            name='invited',
-            field=models.ManyToManyField(related_name='invited_events', to='users.Person'),
         ),
         migrations.AlterField(
             model_name='event',
