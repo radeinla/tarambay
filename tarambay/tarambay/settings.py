@@ -119,6 +119,7 @@ STATIC_URL = '/static/'
 # STATIC_ROOT = ,
 STATICFILES_DIRS = (
     normpath(join(BASE_DIR, 'static')),
+    normpath(join(BASE_DIR, 'vendors')),
 )
 
 # use custom user model
