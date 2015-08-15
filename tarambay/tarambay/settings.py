@@ -137,3 +137,5 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'URL_FIELD_NAME': 'self',
 }
+
+LOGIN_REDIRECT_URL = '/'

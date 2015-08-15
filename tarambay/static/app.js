@@ -4,9 +4,23 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
 .config(['$mdThemingProvider', function($mdThemingProvider) {
   $mdThemingProvider.theme('default').primaryPalette('purple');
 }])
-.controller('tarambayAppController', ['$scope', '$mdDialog', 'mdThemeColors', function($scope, $mdDialog, mdThemeColors) {
+
+.controller('tarambayAppController', ['$scope', '$mdDialog', '$http', 'mdThemeColors', function($scope, $mdDialog, $http, mdThemeColors) {
   $scope.mdThemeColors = mdThemeColors;
   this.addEvent = {};
+  var self = this;
+
+  this.categoriesPromise = $http.get('/api/categories')
+    .then(function(response) {
+      console.log(response.data.results);
+      self.categories = response.data.results;
+    }, function(error) {
+      //TODO: error
+    });
+
+  this.loadCategories = function() {
+    return this.categoriesPromise;
+  }
 
   this.setDefaultEventParams = function () {
     this.addEvent.params = {
