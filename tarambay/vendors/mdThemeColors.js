@@ -417,7 +417,7 @@ div.popupDialogContent {\
 
       $scope.$watch('SelectedDate', function(newValue) {
         if (newValue != null) {
-          $scope.SelectedDateText = $filter('date')(newValue, 'M/d/yyyy');
+          $scope.SelectedDateText = $filter('date')(newValue, 'MM/dd/yyyy');
         } else {
           $scope.SelectedDateText = null;
         }

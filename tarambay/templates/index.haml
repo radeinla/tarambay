@@ -60,10 +60,22 @@
 											Location
 										%input{ng-model:"tarambay.addEvent.params.location", required:None}
 									</md-input-container>
-									<j-md-datepicker ng-model="tarambay.addEvent.params.start" placeholder="Enter start date" orientation="landscape">
-									</j-md-datepicker>
-									<j-md-datepicker ng-model="tarambay.addEvent.params.end" placeholder="Enter end date" orientation="landscape">
-									</j-md-datepicker>
+									%div{layout:'row'}
+										<j-md-datepicker flex ng-model="tarambay.addEvent.params.startDate" placeholder="Start Date" orientation="landscape">
+										</j-md-datepicker>
+										<md-input-container flex>
+											%label
+												Start Time
+											%input{ng-model:"tarambay.addEvent.params.startTime", required:None}
+										</md-input-container>
+									%div{layout:'row'}
+										<j-md-datepicker flex ng-model="tarambay.addEvent.params.endDate" placeholder="End Date" orientation="landscape">
+										</j-md-datepicker>
+										<md-input-container flex>
+											%label
+												End Time
+											%input{ng-model:"tarambay.addEvent.params.endTime", required:None}
+										</md-input-container>
 									<md-chips ng-model="tarambay.addEvent.params.tags" placeholder="Enter a tag" delete-button-label="Remove Tag" delete-hint="Press delete to remove tag" secondary-placeholder="Enter a tag">
 									</md-chips>
 									%div
