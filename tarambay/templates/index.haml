@@ -31,14 +31,14 @@
 					Tarambay!
 				%span{flex:None}
 				%div{class:'login-container'}
-					<md-button class="md-fab md-primary md-hue-2" title="Logout" aria-label="logout" ng-click="logout()" ng-if="currentUser">
+					<md-button class="md-fab md-primary md-hue-2" title="Logout" aria-label="logout" ng-click="logout()" ng-if="tarambay.currentUser">
 						<md-icon md-svg-src="/static/img/icons/logout.svg"></md-icon>
 					</md-button>
-					<md-button class="md-fab md-primary md-hue-2" title="Login" aria-label="login" ng-click="login()" ng-if="!currentUser">
+					<md-button class="md-fab md-primary md-hue-2" title="Login" aria-label="login" ng-click="login()" ng-if="!tarambay.currentUser">
 						<md-icon md-svg-src="/static/img/icons/login.svg"></md-icon>
 					</md-button>
 		</md-toolbar>
-		%div{'ng-hide':'!tarambay.viewAsMap'}
+		%div{'ng-hide':'!tarambay.viewAsMap', 'class':'ng-cloak'}
 			%div{layout:"row", 'layout-align':'center center'}
 				%div#map-background{'map':None, 'center':"14.65,121.1", 'zoom':"13"}
 				%div{layout:"column", flex:"100", class:"search-container"}
@@ -57,7 +57,8 @@
 							<md-button class="md-fab" aria-label="Add Event" ng-click="tarambay.toggleAddEvent()">
 								<md-icon md-svg-src="/static/img/icons/plus.svg"></md-icon>
 							</md-button>
-			%div{layout:"row", 'layout-align':"center center", class:'ng-hide', 'ng-show':"tarambay.addEventVisible", 'layout-fill':None}
+			%div{layout:"row", 'layout-align':"center center", class:'ng-hide', 'ng-show':"tarambay.addEventVisible", 'layout-fill':None,
+					 'md-swipe-left':"tarambay.cancelAddEvent()", 'md-swipe-right':"tarambay.cancelAddEvent()"}
 				%div{layout:"row", 'layout-align':"center center", 'layout-fill':None, class:'add-event-container'}
 					%div{layout:"column", 'layout-fill':None, flex:"70"}
 						<md-card>
@@ -91,7 +92,7 @@
 														{{ error }}
 											</md-input-container>
 											<md-input-container ng-class="{'md-input-invalid': tarambay.addEvent.errors.location}">
-												%input{ng-model:"tarambay.addEvent.params.location", required:None, 'places-auto-complete':True}
+												%input{ng-model:"tarambay.addEvent.params.location", required:None, 'places-auto-complete':True, 'aria-label':'location'}
 												%div.errors{ng-messages:None}
 													%div{ng-message:None, ng-repeat: "error in tarambay.addEvent.errors.location"}
 														{{ error }}
@@ -143,7 +144,7 @@
 							</md-card-content>
 						</md-card>
 
-		%div{class:'ng-hide', 'ng-show':'!tarambay.viewAsMap', flex:None}
+		%div{class:'ng-cloak ng-hide', 'ng-show':'!tarambay.viewAsMap', flex:None}
 			<md-subheader class="md-primary">Events</md-subheader>
 			<md-content layout="row" flex="80" layout-margin layout-padding>
 				<md-card layout layout-align="center center" ng-repeat="event in tarambay.allEvents">
