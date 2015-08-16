@@ -111,11 +111,11 @@
 				<md-dialog-content>
 					%div
 						%p
-							Category: {{tarambay.getCategoryName(selectedEvent.category)}}
+							Category: {{getCategoryName(selectedEvent.category)}}
 						%p
 							Description: {{selectedEvent.description}}
 						%p
-							Event Started By: {{tarambay.getUserDisplayName(selectedEvent.admin)}}
+							Event Started By: {{getUserDisplayName(selectedEvent.admin)}}
 						%p
 							Start Time: {{selectedEvent.start | date:"MM/dd/yyyy 'at' h:mma"}}
 						%p
