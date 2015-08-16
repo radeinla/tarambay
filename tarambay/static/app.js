@@ -19,8 +19,8 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
   });
 })
 .controller('tarambayAppController', [
-  '$scope', '$mdDialog', 'mdThemeColors', '$http', 'Event',
-  function($scope, $mdDialog, mdThemeColors, $http, Event) {
+  '$q', '$scope', '$mdDialog', 'mdThemeColors', '$http', 'Event',
+  function($q, $scope, $mdDialog, mdThemeColors, $http, Event) {
     var self = this;
     $scope.mdThemeColors = mdThemeColors;
 
@@ -43,7 +43,7 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
     }
 
     self.setDefaultEventParams = function () {
-      self.addEvent.params = {
+      this.addEvent.params = {
         private: true,
         tags: []
       };
@@ -64,17 +64,62 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
       this.setDefaultEventParams();
     };
 
+    self.formatDateForApi = function(date, time) {
+        return date.format("YYYY-MM-DD") + "T" + time.format("HH:mm") + "+08:00";
+    };
+
+    self.parseDateTime = function(dateStr, timeStr) {
+      var parts = [moment(dateStr), moment(timeStr.toLowerCase(), ['hh:mm a','hh:mma','hha','ha','hh a', 'h a'])];
+      for (var i in parts) {
+        var part = parts[i];
+        if (!part.isValid()) {
+          return null;
+        }
+      }
+      return parts;
+    }
+
+    self.parseErrors = function(responseErrors) {
+      var errors = [];
+      for (key in responseErrors) {
+        errors = errors.concat(responseErrors[key]);
+      }
+      return errors;
+    }
+
     self.saveEvent = function() {
-      //TODO: save
-      console.log('saveEvent');
-      console.log($scope.params);
-      var newEvent = new Event(self.addEvent.params);
+      var data = angular.extend({}, self.addEvent.params);
+      if (!data.startDate || !data.startTime || !data.endDate || !data.endTime) {
+        self.addEvent.errors = {non_field_errors: ['Please specify start and end date and time.']};
+        return;
+      }
+      if (data.startDate) {
+        var parts = self.parseDateTime(data.startDate, data.startTime);
+        if (!parts) {
+          self.addEvent.errors = {non_field_errors: ['Please specify valid start date and time.']};
+          return;
+        }
+        delete data.startDate;
+        delete data.startTime;
+        data.start = self.formatDateForApi(parts[0], parts[1]);
+      }
+      if (data.endDate) {
+        var parts = self.parseDateTime(data.endDate, data.endTime);
+        if (!parts) {
+          self.addEvent.errors = {non_field_errors: ['Please specify valid end date and time.']};
+          return;
+        }
+        delete data.endDate;
+        delete data.endTime;
+        data.end = self.formatDateForApi(parts[0], parts[1]);
+      }
+      var newEvent = new Event(data);
       var createEvent = newEvent.$save();
       createEvent.then(function(created) {
         console.log({created: created});
         self.hideAddEvent();
-      }, function() {
-        console.log('failed!');
+      }, function(reject) {
+        self.addEvent.errors = reject.data;
       });
     };
 
