@@ -29,6 +29,10 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
     this.categoriesPromise = $http.get('/api/categories')
       .then(function(response) {
         self.categories = response.data.results;
+        self.categoriesDict = {}
+        for (var i=0; i<self.categories.length; i++) {
+          self.categoriesDict[self.categories[i].id] = self.categories[i].name;
+        }
       }, function(error) {
         //TODO: error
       });
@@ -108,7 +112,8 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
                 targetEvent: event,
                 clickOutsideToClose:true,
                 locals: {
-                  selectedEvent: this.eventInfo
+                  selectedEvent: this.eventInfo,
+                  categoriesDict: self.categoriesDict
                 }
               });
             });
@@ -125,16 +130,31 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
 
 });
 
-function ShowEventController($scope, $mdDialog, selectedEvent) {
+function ShowEventController($scope, $mdDialog, selectedEvent, categoriesDict) {
   $scope.selectedEvent = selectedEvent;
 
   $scope.closeShowEventDialog = function() {
     $mdDialog.cancel();
   };
+
   $scope.joinEvent = function(event) {
     console.log('joinEvent', event);
     //TODO: join event
     //TODO: show toast: successful/error
     $mdDialog.hide();
+  };
+
+  $scope.getCategoryName = function(categoryLink) {
+    console.log('getCategoryName', categoryLink);
+    //TODO: ayusin? pampabilis lang to
+    var id = categoryLink.split('/')[5];
+    if (id in categoriesDict) {
+      return categoriesDict[id];
+    }
+    else return null;
+  };
+
+  $scope.getUserDisplayName = function(userLink) {
+    
   }
 };
