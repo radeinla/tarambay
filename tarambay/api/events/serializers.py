@@ -50,6 +50,8 @@ class CreateEventSerializer(EventSerializer):
         Check that location is a valid address
         """
         location = data.pop('location', None)
+        start = data.get('start', None)
+        end = data.get('end', None)
         if location:
             result = Geocoder.geocode(location)
             if result.valid_address:
@@ -57,6 +59,10 @@ class CreateEventSerializer(EventSerializer):
                 data['longitude'] = result.longitude
             else:
                 raise serializers.ValidationError(_("That is not a valid location."))
+        if start and end:
+            if end <= start:
+            raise serializers.ValidationError("The end date and time must be \
+                after the start date and time")
         elif not self.partial:
             latitude = data.get('latitude', None)
             longitude = data.get('longitude', None)
@@ -74,3 +80,8 @@ class CreateEventSerializer(EventSerializer):
             setattr(instance, attr, value)
         instance.save()
         return instance
+
+
+class InviteEventSerializer(EventSerializer):
+    class Meta:
+        fields = ('id', 'self', 'invited')
