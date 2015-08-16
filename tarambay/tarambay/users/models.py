@@ -59,6 +59,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Invited(models.Model):
     user = models.OneToOneField('users.User', null=True, blank=True)
     email = models.EmailField(_('email address'), null=True, blank=True)
+    uuid = UUIDField(unique=True)
 
     class Meta:
         verbose_name = _('Invited')
