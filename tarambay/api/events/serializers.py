@@ -2,6 +2,7 @@ from django.utils.translation import ugettext_lazy as _
 from pygeocoder import Geocoder
 from rest_framework import serializers
 
+from api.users.serializers import InvitedSerializer
 from tarambay.events.models import Category, Event
 
 
@@ -18,11 +19,12 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.UUIDField(source='uuid', read_only=True)
+    invited = InvitedSerializer(many=True)
 
     class Meta:
         model = Event
         fields = ('id', 'self', 'category', 'title', 'description', 'latitude',
-                  'longitude', 'start', 'end', 'admin', 'tags')
+                  'longitude', 'start', 'end', 'admin', 'tags', 'invited')
         extra_kwargs = {
             'self': {'lookup_field': 'uuid'},
             'admin': {'lookup_field': 'uuid'},
@@ -82,6 +84,9 @@ class CreateEventSerializer(EventSerializer):
         return instance
 
 
-class InviteEventSerializer(EventSerializer):
+class InviteEventSerializer(serializers.ModelSerializer):
+    invited = serializers.CharField(write_only=True)
+
     class Meta:
-        fields = ('id', 'self', 'invited')
+        model = Event
+        fields = ('invited',)
