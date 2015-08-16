@@ -10,3 +10,9 @@
 .search-container, .add-event-container {
   z-index: 2;
 }
+
+.event-list-map {
+  border:1px solid black;
+  width: 200px;
+  height: 300px;
+}
