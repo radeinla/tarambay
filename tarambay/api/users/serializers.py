@@ -79,3 +79,17 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
             'self': {'lookup_field': 'uuid'}
         }
 
+
+class InvitedSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username')
+    email = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Invited
+        fields = ('username', 'email')
+
+    def get_email(self, obj):
+        if obj.user:
+            return obj.user.email
+        else:
+            obj.email
