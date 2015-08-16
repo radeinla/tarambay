@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from .serializers import (CategorySerializer, CreateEventSerializer,
                           EventSerializer, InviteEventSerializer)
-from api.permissions import EventPermission
+from api.permissions import EventPermission, IsObjectAdmin
 from tarambay.events.models import Category, Event
 
 
@@ -45,6 +45,7 @@ class EventInviteView(generics.RetrieveUpdateAPIView):
     queryset = Event.objects.all()
     serializer_class = InviteEventSerializer
     lookup_field = 'uuid'
+    permission_classes = (IsObjectAdmin,)
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
