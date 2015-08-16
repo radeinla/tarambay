@@ -130,6 +130,7 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
       createEvent.then(function(created) {
         console.log({created: created});
         self.hideAddEvent();
+        self.updateMapPins();
       }, function(reject) {
         self.addEvent.errors = reject.data;
       });
