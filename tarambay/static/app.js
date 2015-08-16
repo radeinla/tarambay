@@ -42,11 +42,12 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
   function($q, $scope, $mdDialog, mdThemeColors, $http, $window, Event) {
     var self = this;
     self.viewAsMap = true;
+    self.currentUser = null;
     $scope.mdThemeColors = mdThemeColors;
 
-    this.addEvent = {};
+    self.addEvent = {};
 
-    this.categoriesPromise = $http.get('/api/categories')
+    self.categoriesPromise = $http.get('/api/categories')
       .then(function(response) {
         self.categories = response.data.results;
         self.categoriesDict = {}
@@ -63,7 +64,7 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
         self.updateMapPins();
     });
 
-    this.loadCategories = function() {
+    self.loadCategories = function() {
       return this.categoriesPromise;
     }
 
@@ -79,6 +80,15 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
     };
     $scope.logout = function() {
       $window.location.href = '/api-auth/logout/?next=/';
+    }
+
+    self.fetchCurrentUser = function() {
+      $http.get('api/users/profile')
+        .then(function(response){
+          self.currentUser = response.data
+        }, function(error){
+          self.currentUser = null;
+        })
     }
 
     self.toggleAddEvent = function() {
@@ -225,6 +235,7 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
 
     self.setDefaultEventParams();
     self.loadCategories();
+    self.fetchCurrentUser();
   }
 ])
 
