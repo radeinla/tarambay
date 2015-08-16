@@ -31,11 +31,11 @@
 					Tarambay!
 				%span{flex:None}
 				%div{class:'login-container'}
-					<md-button class="md-fab md-primary md-hue-2" title="Logout" aria-label="logout" ng-click="logout()" ng-if="tarambay.currentUser">
-						<md-icon md-svg-src="/static/img/icons/logout.svg"></md-icon>
+					<md-button class="md-hue-2" title="Logout" aria-label="logout" ng-click="logout()" ng-if="tarambay.currentUser">
+						Logout <md-icon md-svg-src="/static/img/icons/logout.svg"></md-icon>
 					</md-button>
-					<md-button class="md-fab md-primary md-hue-2" title="Login" aria-label="login" ng-click="login()" ng-if="!tarambay.currentUser">
-						<md-icon md-svg-src="/static/img/icons/login.svg"></md-icon>
+					<md-button class="md-hue-2" title="Login" aria-label="login" ng-click="login()" ng-if="!tarambay.currentUser">
+						Login <md-icon md-svg-src="/static/img/icons/login.svg"></md-icon>
 					</md-button>
 		</md-toolbar>
 		%div{'ng-hide':'!tarambay.viewAsMap', 'class':'ng-cloak'}
@@ -166,7 +166,7 @@
 			</md-content>
 
 		%script{type:"text/ng-template", id:"showEventDialog.tmpl.html"}
-			<md-dialog aria-label="Show Event {{selectedEvent.title}}" class="event-dialog">
+			<md-dialog aria-label="Show Event {{selectedEvent.title}}" class="event-dialog" flex-md="80" flex-gt-md="50">
 				<md-toolbar class="md-primary">
 					<div class="md-toolbar-tools">
 						<h2>Event: {{selectedEvent.title}}</h2>
