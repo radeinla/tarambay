@@ -32,7 +32,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         model = Event
         fields = ('id', 'self', 'category', 'title', 'description', 'latitude',
                   'longitude', 'start', 'end', 'admin', 'tags', 'invited',
-                  'going', 'invite_url', 'join_url', 'private')
+                  'going', 'invite_url', 'join_url', 'private', 'location')
         extra_kwargs = {
             'self': {'lookup_field': 'uuid'},
             'admin': {'lookup_field': 'uuid'},
@@ -47,7 +47,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CreateEventSerializer(EventSerializer):
-    location = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    location = serializers.CharField(required=False, allow_blank=True)
     latitude = serializers.CharField(required=False, allow_blank=True)
     longitude = serializers.CharField(required=False, allow_blank=True)
 
@@ -73,6 +73,7 @@ class CreateEventSerializer(EventSerializer):
             if result.valid_address:
                 data['latitude'] = result.latitude
                 data['longitude'] = result.longitude
+                data['location'] = result.formatted_address
             else:
                 raise serializers.ValidationError(_("That is not a valid location."))
         if start and end:
@@ -173,10 +174,10 @@ class ReadOnlyEventSerializer(EventSerializer):
         model = Event
         fields = ('id', 'self', 'category', 'title', 'description', 'latitude',
                   'longitude', 'start', 'end', 'admin', 'tags', 'invited',
-                  'going', 'invite_url', 'join_url', 'private')
+                  'going', 'invite_url', 'join_url', 'private', 'location')
         read_only_fields = ('id', 'self', 'category', 'title', 'description', 'latitude',
                   'longitude', 'start', 'end', 'admin', 'tags', 'invited',
-                  'going', 'invite_url', 'join_url', 'private')
+                  'going', 'invite_url', 'join_url', 'private', 'location')
         extra_kwargs = {
             'self': {'lookup_field': 'uuid'},
             'admin': {'lookup_field': 'uuid'},
