@@ -24,13 +24,15 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 class EventSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.UUIDField(source='uuid', read_only=True)
     invited = InvitedSerializer(many=True)
+    going = InvitedSerializer(many=True)
     invite_url = serializers.SerializerMethodField()
+    join_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Event
         fields = ('id', 'self', 'category', 'title', 'description', 'latitude',
                   'longitude', 'start', 'end', 'admin', 'tags', 'invited',
-                  'invite_url', 'private')
+                  'going', 'invite_url', 'join_url', 'private')
         extra_kwargs = {
             'self': {'lookup_field': 'uuid'},
             'admin': {'lookup_field': 'uuid'},
@@ -39,6 +41,9 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_invite_url(self, obj):
         return reverse('event-invite', args=[obj.uuid], request=self.context['request'])
+
+    def get_join_url(self, obj):
+        return reverse('event-join', args=[obj.uuid], request=self.context['request'])
 
 
 class CreateEventSerializer(EventSerializer):
@@ -124,3 +129,56 @@ class InviteEventSerializer(serializers.ModelSerializer):
                 invited, created = Invited.objects.get_or_create(user=user)
             instance.invited.add(invited)
         return instance
+
+
+class JoinEventSerializer(serializers.Serializer):
+    join = serializers.BooleanField(write_only=True)
+
+    def update(self, instance, validated_data):
+        join = validated_data.get('join')
+        user = self.context['request'].user
+        try:
+            instance.going.get(user=user)
+            return instance
+        except Invited.DoesNotExist:
+            pass
+        if join:
+            if instance.admin:
+                try:
+                    invited = instance.invited.get(user=user)
+                except Invited.DoesNotExist:
+                    invited, created = Invited.objects.get_or_create(user=user)
+                instance.invited.remove(invited)
+                instance.going.add(invited)
+            elif instance.private:
+                try:
+                    invited = instance.invited.get(user=user)
+                    instance.invited.remove(invited)
+                except Invited.DoesNotExist:
+                    raise serializers.ValidationError(_("You can only join "
+                        "private events you have been invited to."))
+                instance.going.add(invited)
+            else:
+                try:
+                    invited = instance.invited.get(user=user)
+                    instance.invited.remove(invited)
+                except Invited.DoesNotExist:
+                    invited, created = Invited.objects.get_or_create(user=user)
+                instance.going.add(invited)
+        return instance
+
+
+class ReadOnlyEventSerializer(EventSerializer):
+    class Meta:
+        model = Event
+        fields = ('id', 'self', 'category', 'title', 'description', 'latitude',
+                  'longitude', 'start', 'end', 'admin', 'tags', 'invited',
+                  'going', 'invite_url', 'join_url', 'private')
+        read_only_fields = ('id', 'self', 'category', 'title', 'description', 'latitude',
+                  'longitude', 'start', 'end', 'admin', 'tags', 'invited',
+                  'going', 'invite_url', 'join_url', 'private')
+        extra_kwargs = {
+            'self': {'lookup_field': 'uuid'},
+            'admin': {'lookup_field': 'uuid'},
+            'category': {'lookup_field': 'uuid'},
+        }
