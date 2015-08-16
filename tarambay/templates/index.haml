@@ -19,7 +19,7 @@
 						</md-button>
 					</md-fab-trigger>
 					<md-fab-actions>
-						<md-button class="md-fab md-primary md-hue-2" title="view map" aria-label="view map" ng-click="tarambay.viewAsMap=true">
+						<md-button class="md-fab md-primary md-hue-2" title="view map" aria-label="view map" ng-click="tarambay.viewAsMap=true;tarambay.updateMapPins()">
 							<md-icon md-svg-src="/static/img/icons/map-marker.svg"></md-icon>
 						</md-button>
 						<md-button class="md-fab md-primary md-hue-2" title="view list" aria-label="view list" 
@@ -125,7 +125,7 @@
 					<md-card-content>
 						%div{layout:"row", layout-align:"center center"}
 							%div{class:"event-list-map"}
-								<map center="{{event.latitude}},{{event.longitude}}" zoom="3"></map>
+								TEMP MAP
 						%div{layout:"row", layout-align:"center center"}
 							<md-button class="md-raised md-primary md-hue-1" ng-click="tarambay.showEvent($event, event)">
 								View Event Details

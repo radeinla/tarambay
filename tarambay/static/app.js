@@ -22,6 +22,7 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
   '$scope', '$mdDialog', 'mdThemeColors', '$http', '$timeout', 'Event',
   function($scope, $mdDialog, mdThemeColors, $http, $timeout, Event) {
     var self = this;
+    self.viewAsMap = true;
     $scope.mdThemeColors = mdThemeColors;
 
     this.addEvent = {};
@@ -39,6 +40,8 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
 
     $scope.$on('mapInitialized', function(event, map) {
       $scope.map = map;
+      if (self.viewAsMap)
+        self.updateMapPins();
     });
 
     this.loadCategories = function() {
@@ -149,7 +152,6 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
 
     self.setDefaultEventParams();
     self.loadCategories();
-    $timeout(self.updateMapPins);
   }
 ])
 
