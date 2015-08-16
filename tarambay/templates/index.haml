@@ -79,10 +79,15 @@
 													%div{ng-message:None, ng-repeat: 'error in tarambay.addEvent.errors.non_field_errors'}
 														{{error}}
 											</md-input-container>
-											<md-select ng-model="tarambay.addEvent.params.category" placeholder="Category" md-on-open="tarambay.loadCategories()" required>
-												<md-option ng-value="category.self" data-ng-repeat="category in tarambay.categories">{{category.name}}</md-option>
-											</md-select>
 											<md-input-container ng-class="{'md-input-invalid': tarambay.addEvent.errors.category}">
+												<md-select ng-model="tarambay.addEvent.params.category" placeholder="Category" md-on-open="tarambay.loadCategories()" required>
+													<md-option ng-value="category.self" data-ng-repeat="category in tarambay.categories">{{category.name}}</md-option>
+												</md-select>
+												%div.errors{ng-messages:None}
+													%div{ng-message:None, ng-repeat: "error in tarambay.addEvent.errors.category"}
+														{{ error }}
+											</md-input-container>
+											<md-input-container ng-class="{'md-input-invalid': tarambay.addEvent.errors.title}">
 												%label
 													Title
 												%input{ng-model:"tarambay.addEvent.params.title", required:None}
