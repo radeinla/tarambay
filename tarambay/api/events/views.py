@@ -1,3 +1,5 @@
+import datetime
+import pytz
 from django.db.models import Q
 from rest_framework import permissions, viewsets
 
@@ -29,7 +31,9 @@ class EventViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        now = datetime.datetime.now(pytz.utc)
+        queryset = Event.objects.filter(start__gt=now)
         if user.is_authenticated():
-            return Event.objects.filter(Q(private=False) | Q(invited__user=user)).order_by('-end', '-start')
+            return queryset.filter(Q(private=False) | Q(invited__user=user)).order_by('-end', '-start')
         else:
-            return Event.objects.filter(private=False).order_by('-end', '-start')
+            return queryset.filter(private=False).order_by('-end', '-start')
