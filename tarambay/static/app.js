@@ -19,8 +19,8 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
   });
 })
 .controller('tarambayAppController', [
-  '$scope', '$mdDialog', 'mdThemeColors', '$http', 'Event',
-  function($scope, $mdDialog, mdThemeColors, $http, Event) {
+  '$scope', '$mdDialog', 'mdThemeColors', '$http', '$timeout', 'Event',
+  function($scope, $mdDialog, mdThemeColors, $http, $timeout, Event) {
     var self = this;
     $scope.mdThemeColors = mdThemeColors;
 
@@ -39,7 +39,6 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
 
     $scope.$on('mapInitialized', function(event, map) {
       $scope.map = map;
-      self.updateMapPins();
     });
 
     this.loadCategories = function() {
@@ -52,8 +51,6 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
         tags: []
       };
     }
-
-    self.setDefaultEventParams();
 
     self.toggleAddEvent = function() {
       if (self.addEventVisible) {
@@ -91,6 +88,7 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
       $http.get('/api/events')
         .then(function(response) {
           console.log(response.data.results)
+          self.allEvents = response.data.results;
           self.allEventsMarkers = [];
           for (var i=0; i<response.data.results.length; i++) {
             var gMapsLatLong = new google.maps.LatLng(response.data.results[i].latitude, response.data.results[i].longitude)
@@ -122,7 +120,36 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
         }, function(error){
           //TODO: error
         })
-    }
+    };
+
+    self.listEvents = function() {
+      if (!self.allEvents) {
+        $http.get('/api/events')
+        .then(function(response) {
+          self.allEvents = response.data.results;
+        }, function(error) {
+          //TODO: error
+        })
+      }
+    };
+
+    self.showEvent = function(event, selectedEvent) {
+      $mdDialog.show({
+        controller: ShowEventController,
+        templateUrl: 'showEventDialog.tmpl.html',
+        parent: angular.element(document.body),
+        targetEvent: event,
+        clickOutsideToClose:true,
+        locals: {
+          selectedEvent: selectedEvent,
+          categoriesDict: self.categoriesDict
+        }
+      });
+    };
+
+    self.setDefaultEventParams();
+    self.loadCategories();
+    $timeout(self.updateMapPins);
   }
 ])
 
@@ -155,6 +182,7 @@ function ShowEventController($scope, $mdDialog, selectedEvent, categoriesDict) {
   };
 
   $scope.getUserDisplayName = function(userLink) {
-    
+
   }
 };
+
