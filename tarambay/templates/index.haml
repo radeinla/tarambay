@@ -6,13 +6,13 @@
 		%link{rel:"stylesheet", href:"https://ajax.googleapis.com/ajax/libs/angular_material/0.10.0/angular-material.min.css"}
 		%link{rel:"stylesheet", href:"/static/css/app.css"}
 	%body{layout:"column", 'ng-controller': 'tarambayAppController as tarambay', 'map-lazy-load': "http://maps.google.com/maps/api/js?libraries=places"}
-		<md-toolbar layout="row">
+		<md-toolbar layout="row" class="md-primary md-hue-2">
 			%div{class:"md-toolbar-tools header"}
 				%h1{class:'title'}
 					Tarambay!
 		</md-toolbar>
 		%div{layout:"row", 'layout-align':'center center'}
-			%div#map-background{'map':None, 'center':"14,121", 'zoom':"8"}
+			%div#map-background{'map':None, 'center':"14.65,121.1", 'zoom':"13"}
 			%div{layout:"column", flex:"100", class:"search-container"}
 				%div{layout:"row", 'layout-align':'center center'}
 					<md-card flex="75" >
@@ -31,20 +31,21 @@
 							<md-icon md-svg-src="/static/img/icons/plus.svg"></md-icon>
 						</md-button>
 
-		%div{layout:"row", 'layout-align':"center center", class:'add-event-container ng-hide', 'ng-show':"tarambay.addEventVisible"}
+		%div{layout:"row", 'layout-align':"center center", class:'add-event-container ng-hide', 'ng-show':"tarambay.addEventVisible",
+			'md-swipe-left':"tarambay.cancelAddEvent()", 'md-swipe-right':"tarambay.cancelAddEvent()"}
 			%div{layout:"column", 'layout-fill':None, flex:"70"}
 				<md-card>
+					<md-toolbar class="md-primary">
+						%div{class:"md-toolbar-tools"}
+							%h2
+								Add Event
+							%span{flex:None}
+							<md-button class="md-icon-button" type="button" ng-click="tarambay.cancelAddEvent()">
+								<md-icon md-svg-src="/static/img/icons/close.svg" aria-label="Close dialog"></md-icon>
+							</md-button>
+					</md-toolbar>
 					<md-card-content>
 						%form{ng-submit:"tarambay.saveEvent()"}
-							<md-toolbar>
-								%div{class:"md-toolbar-tools"}
-									%h2
-										Add Event
-									%span{flex:None}
-									<md-button class="md-icon-button" type="button" ng-click="tarambay.cancelAddEvent()">
-										<md-icon md-svg-src="/static/img/icons/close.svg" aria-label="Close dialog"></md-icon>
-									</md-button>
-							</md-toolbar>
 							<md-dialog-content class="selectdemoOptionsWithAsyncSearch" >
 								%div{layout:'column'}
 									<md-select ng-model="tarambay.addEvent.params.category" placeholder="Category" md-on-open="tarambay.loadCategories()" required>
@@ -56,8 +57,6 @@
 										%input{ng-model:"tarambay.addEvent.params.title", required:None}
 									</md-input-container>
 									<md-input-container>
-										%label
-											Enter a Location
 										%input{ng-model:"tarambay.addEvent.params.location", required:None, 'places-auto-complete':True}
 									</md-input-container>
 									%div{layout:'row'}
@@ -92,7 +91,7 @@
 								<md-button type="button" ng-click="tarambay.cancelAddEvent()">
 									Cancel
 								</md-button>
-								<md-button>
+								<md-button class="md-raised md-primary md-hue-1">
 									Save
 								</md-button>
 					</md-card-content>
@@ -100,7 +99,7 @@
 
 		%script{type:"text/ng-template", id:"showEventDialog.tmpl.html"}
 			<md-dialog aria-label="Show Event {{selectedEvent.title}}">
-				<md-toolbar>
+				<md-toolbar class="md-primary">
 					<div class="md-toolbar-tools">
 						<h2>Event: {{selectedEvent.title}}</h2>
 						<span flex></span>
@@ -111,9 +110,19 @@
 				</md-toolbar>
 				<md-dialog-content>
 					%div
+						%p
+							Category: {{tarambay.getCategoryName(selectedEvent.category)}}
+						%p
+							Description: {{selectedEvent.description}}
+						%p
+							Event Started By: {{tarambay.getUserDisplayName(selectedEvent.admin)}}
+						%p
+							Start Time: {{selectedEvent.start | date:"MM/dd/yyyy 'at' h:mma"}}
+						%p
+							End Time: {{selectedEvent.end | date:"MM/dd/yyyy 'at' h:mma"}}
 				</md-dialog-content>
 				%div{class:"md-actions", layout:"row"}
-					<md-button ng-click="joinEvent(selectedEvent)">
+					<md-button class="md-raised md-primary md-hue-1" ng-click="joinEvent(selectedEvent)">
 						Join Event
 					</md-button>
 			</md-dialog>

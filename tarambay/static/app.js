@@ -87,17 +87,20 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
       $http.get('/api/events')
         .then(function(response) {
           console.log(response.data.results)
-          self.allEvents = [];
+          self.allEventsMarkers = [];
           for (var i=0; i<response.data.results.length; i++) {
-            self.allEvents.push(new google.maps.LatLng(response.data.results[i].latitude, response.data.results[i].longitude));
+            var gMapsLatLong = new google.maps.LatLng(response.data.results[i].latitude, response.data.results[i].longitude)
+            self.allEventsMarkers.push(gMapsLatLong);
             var marker = new google.maps.Marker({
-              position: self.allEvents[i],
+              position: gMapsLatLong,
               map: $scope.map,
               draggable: false,
-              title: response.data.results[i].title
+              title: response.data.results[i].title,
+              eventInfo: response.data.results[i]
             });
             marker.addListener('click', function(event) {
               //open dialog with event info
+              console.log('click', this);
               $mdDialog.show({
                 controller: ShowEventController,
                 templateUrl: 'showEventDialog.tmpl.html',
@@ -105,12 +108,12 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
                 targetEvent: event,
                 clickOutsideToClose:true,
                 locals: {
-                  selectedEvent: self.allEvents[i]
+                  selectedEvent: this.eventInfo
                 }
               });
             });
           };
-          console.log(self.allEvents);
+          console.log(self.allEventsMarkers);
         }, function(error){
           //TODO: error
         })
