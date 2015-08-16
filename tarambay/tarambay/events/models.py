@@ -27,6 +27,7 @@ class Event(models.Model):
     description = models.TextField(_('Description'), blank=True)
     start = models.DateTimeField(_('Start'))
     end = models.DateTimeField(_('End'))
+    location = models.TextField(_('Location'))
     latitude = models.DecimalField(_('Latitude'), decimal_places=6,
                                    max_digits=9)
     longitude = models.DecimalField(_('Longitude'), decimal_places=6,
