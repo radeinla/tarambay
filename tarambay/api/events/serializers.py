@@ -24,13 +24,15 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 class EventSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.UUIDField(source='uuid', read_only=True)
     invited = InvitedSerializer(many=True)
+    going = InvitedSerializer(many=True)
     invite_url = serializers.SerializerMethodField()
+    join_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Event
         fields = ('id', 'self', 'category', 'title', 'description', 'latitude',
                   'longitude', 'start', 'end', 'admin', 'tags', 'invited',
-                  'invite_url', 'private')
+                  'going', 'invite_url', 'join_url', 'private', 'location')
         extra_kwargs = {
             'self': {'lookup_field': 'uuid'},
             'admin': {'lookup_field': 'uuid'},
@@ -40,9 +42,12 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
     def get_invite_url(self, obj):
         return reverse('event-invite', args=[obj.uuid], request=self.context['request'])
 
+    def get_join_url(self, obj):
+        return reverse('event-join', args=[obj.uuid], request=self.context['request'])
+
 
 class CreateEventSerializer(EventSerializer):
-    location = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    location = serializers.CharField(required=False, allow_blank=True)
     latitude = serializers.CharField(required=False, allow_blank=True)
     longitude = serializers.CharField(required=False, allow_blank=True)
 
@@ -68,6 +73,7 @@ class CreateEventSerializer(EventSerializer):
             if result.valid_address:
                 data['latitude'] = result.latitude
                 data['longitude'] = result.longitude
+                data['location'] = result.formatted_address
             else:
                 raise serializers.ValidationError(_("That is not a valid location."))
         if start and end:
@@ -124,3 +130,56 @@ class InviteEventSerializer(serializers.ModelSerializer):
                 invited, created = Invited.objects.get_or_create(user=user)
             instance.invited.add(invited)
         return instance
+
+
+class JoinEventSerializer(serializers.Serializer):
+    join = serializers.BooleanField(write_only=True)
+
+    def update(self, instance, validated_data):
+        join = validated_data.get('join')
+        user = self.context['request'].user
+        try:
+            instance.going.get(user=user)
+            return instance
+        except Invited.DoesNotExist:
+            pass
+        if join:
+            if instance.admin:
+                try:
+                    invited = instance.invited.get(user=user)
+                except Invited.DoesNotExist:
+                    invited, created = Invited.objects.get_or_create(user=user)
+                instance.invited.remove(invited)
+                instance.going.add(invited)
+            elif instance.private:
+                try:
+                    invited = instance.invited.get(user=user)
+                    instance.invited.remove(invited)
+                except Invited.DoesNotExist:
+                    raise serializers.ValidationError(_("You can only join "
+                        "private events you have been invited to."))
+                instance.going.add(invited)
+            else:
+                try:
+                    invited = instance.invited.get(user=user)
+                    instance.invited.remove(invited)
+                except Invited.DoesNotExist:
+                    invited, created = Invited.objects.get_or_create(user=user)
+                instance.going.add(invited)
+        return instance
+
+
+class ReadOnlyEventSerializer(EventSerializer):
+    class Meta:
+        model = Event
+        fields = ('id', 'self', 'category', 'title', 'description', 'latitude',
+                  'longitude', 'start', 'end', 'admin', 'tags', 'invited',
+                  'going', 'invite_url', 'join_url', 'private', 'location')
+        read_only_fields = ('id', 'self', 'category', 'title', 'description', 'latitude',
+                  'longitude', 'start', 'end', 'admin', 'tags', 'invited',
+                  'going', 'invite_url', 'join_url', 'private', 'location')
+        extra_kwargs = {
+            'self': {'lookup_field': 'uuid'},
+            'admin': {'lookup_field': 'uuid'},
+            'category': {'lookup_field': 'uuid'},
+        }

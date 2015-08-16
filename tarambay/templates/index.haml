@@ -31,11 +31,11 @@
 					Tarambay!
 				%span{flex:None}
 				%div{class:'login-container'}
-					<md-button class="md-fab md-primary md-hue-2" title="Logout" aria-label="logout" ng-click="logout()" ng-if="tarambay.currentUser">
-						<md-icon md-svg-src="/static/img/icons/logout.svg"></md-icon>
+					<md-button class="md-hue-2" title="Logout" aria-label="logout" ng-click="logout()" ng-if="tarambay.currentUser">
+						Logout <md-icon md-svg-src="/static/img/icons/logout.svg"></md-icon>
 					</md-button>
-					<md-button class="md-fab md-primary md-hue-2" title="Login" aria-label="login" ng-click="login()" ng-if="!tarambay.currentUser">
-						<md-icon md-svg-src="/static/img/icons/login.svg"></md-icon>
+					<md-button class="md-hue-2" title="Login" aria-label="login" ng-click="login()" ng-if="!tarambay.currentUser">
+						Login <md-icon md-svg-src="/static/img/icons/login.svg"></md-icon>
 					</md-button>
 		</md-toolbar>
 		%div{'ng-hide':'!tarambay.viewAsMap', 'class':'ng-cloak'}
@@ -156,8 +156,11 @@
 					%h4{class:'md-body-2'}
 						{{event.title}}
 					<md-card-content>
-						%div{layout:"row", layout-align:"center center"}
-						%div{layout:"row", layout-align:"center center"}
+						%div{layout:"row", layout-align:"center center", 'layout-padding':None}
+							<md-caption>
+								{{event.location}}
+							</md-caption>
+						%div{layout:"row", layout-align:"center center", 'layout-padding':None}
 							<md-button class="md-raised md-primary md-hue-1" ng-click="tarambay.showEvent($event, event)">
 								View Event Details
 							</md-button>
@@ -166,7 +169,7 @@
 			</md-content>
 
 		%script{type:"text/ng-template", id:"showEventDialog.tmpl.html"}
-			<md-dialog aria-label="Show Event {{selectedEvent.title}}">
+			<md-dialog aria-label="Show Event {{selectedEvent.title}}" class="event-dialog" flex-md="80" flex-gt-md="50">
 				<md-toolbar class="md-primary">
 					<div class="md-toolbar-tools">
 						<h2>Event: {{selectedEvent.title}}</h2>
@@ -178,16 +181,60 @@
 				</md-toolbar>
 				<md-dialog-content>
 					%div
-						%p
-							Category: {{eventCategory}}
-						%p
-							Description: {{selectedEvent.description}}
-						%p
-							Event Started By: {{eventCreator}}
-						%p
-							Start Time: {{selectedEvent.start | date:"MM/dd/yyyy 'at' h:mma"}}
-						%p
-							End Time: {{selectedEvent.end | date:"MM/dd/yyyy 'at' h:mma"}}
+						<md-list>
+							<md-list-item>
+								%div{class:'event-detail-label md-body-2'}
+									Category: 
+								%div{class:"md-list-item-text md-body-1"}
+									{{eventCategory}}
+								<md-divider></md-divider>
+							</md-list-item>
+							<md-list-item>
+								%div{class:'event-detail-label md-body-2'}
+									Description: 
+								%div{class:"md-list-item-text md-body-1"}
+									{{selectedEvent.description}}
+								<md-divider></md-divider>
+							</md-list-item>
+							<md-list-item>
+								%div{class:'event-detail-label md-body-2'}
+									Event Started By: 
+								%div{class:"md-list-item-text md-body-1"}
+									{{eventCreator}}
+								<md-divider></md-divider>
+							</md-list-item>
+							<md-list-item>
+								%div{class:'event-detail-label md-body-2'}
+									Start Time: 
+								%div{class:"md-list-item-text md-body-1"}
+									{{selectedEvent.start | date:"MM/dd/yyyy 'at' h:mma"}}
+								<md-divider></md-divider>
+							</md-list-item>
+							<md-list-item>
+								%div{class:'event-detail-label md-body-2'}
+									End Time: 
+								%div{class:"md-list-item-text md-body-1"}
+									{{selectedEvent.end | date:"MM/dd/yyyy 'at' h:mma"}}
+								<md-divider></md-divider>
+							</md-list-item>
+							<md-list-item>
+								%div{class:'event-detail-label md-body-2'}
+									Location: 
+								%div{class:"md-list-item-text md-body-1"}
+									{{selectedEvent.location}}
+								<md-divider ng-if='selectedEvent.formattedTags.length > 0'></md-divider>
+							</md-list-item>
+						</md-list>
+						%div{'layout-padding':None, 'ng-if':'selectedEvent.formattedTags.length > 0'}
+							%div
+								%div{class:'event-detail-label md-body-2'}
+									Tags: 
+								<br/>
+								<md-chips ng-model="selectedEvent.formattedTags" readonly="true">
+									<md-chip-template>
+										<strong>{{$chip}}</strong>
+									</md-chip-template>
+								</md-chips>
 				</md-dialog-content>
 				%div{class:"md-actions", layout:"row"}
 					<md-button class="md-raised md-primary md-hue-1" ng-click="joinEvent(selectedEvent)">

@@ -5,7 +5,8 @@ from rest_framework import generics, permissions, viewsets
 from rest_framework.response import Response
 
 from .serializers import (CategorySerializer, CreateEventSerializer,
-                          EventSerializer, InviteEventSerializer)
+                          EventSerializer, InviteEventSerializer,
+                          JoinEventSerializer, ReadOnlyEventSerializer)
 from api.permissions import EventPermission, IsObjectAdmin
 from tarambay.events.models import Category, Event
 
@@ -36,7 +37,8 @@ class EventViewSet(viewsets.ModelViewSet):
         now = datetime.datetime.now(pytz.utc)
         queryset = Event.objects.filter(start__gt=now)
         if user.is_authenticated():
-            return queryset.filter(Q(private=False) | Q(invited__user=user) | Q(admin=user)).distinct().order_by('-end', '-start')
+            return queryset.filter(Q(private=False) | Q(invited__user=user) | Q(admin=user) | Q(going__user=user)
+                ).distinct().order_by('-end', '-start')
         else:
             return queryset.filter(private=False).distinct().order_by('-end', '-start')
 
@@ -58,5 +60,25 @@ class EventInviteView(generics.RetrieveUpdateAPIView):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-        serializer = EventSerializer(instance, context={'request': request})
+        serializer = ReadOnlyEventSerializer(instance, context={'request': request})
+        return Response(serializer.data)
+
+
+class EventJoinView(generics.RetrieveUpdateAPIView):
+    queryset = Event.objects.all()
+    lookup_field = 'uuid'
+    serializer_class = JoinEventSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = EventSerializer(instance, context={'request':request})
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        serializer = ReadOnlyEventSerializer(instance, context={'request': request})
         return Response(serializer.data)
