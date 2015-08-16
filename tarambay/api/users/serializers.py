@@ -92,4 +92,4 @@ class InvitedSerializer(serializers.ModelSerializer):
         if obj.user:
             return obj.user.email
         else:
-            obj.email
+            return obj.email
