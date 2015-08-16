@@ -12,23 +12,42 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
   $resourceProvider.defaults.stripTrailingSlashes = false;
 }])
 .factory('Event', function($resource) {
-  return $resource('/api/events/:id', {}, {
+  var Event = $resource('/api/events/:id', {}, {
     query: {
-      isArray: false
+      isArray: false,
+      transformResponse: [function(data, getHeaders) {
+        return angular.fromJson(data);
+      }, function(data, getHeaders) {
+        var results = [];
+        for (var idx in data.results) {
+          var event = data.results[idx];
+          results.push(new Event(event));
+        }
+        data.results = results;
+        return data;
+      }],
     }
   });
+
+  Event.prototype.getCoordinates = function(){
+    console.log(this);
+    return [parseFloat(this.latitude), parseFloat(this.longitude)];
+  };
+
+  return Event;
 })
 
 .controller('tarambayAppController', [
-  '$scope', '$mdDialog', 'mdThemeColors', '$http', '$window', 'Event',
-  function($scope, $mdDialog, mdThemeColors, $http, $window, Event) {
+  '$q', '$scope', '$mdDialog', 'mdThemeColors', '$http', '$window', 'Event',
+  function($q, $scope, $mdDialog, mdThemeColors, $http, $window, Event) {
     var self = this;
     self.viewAsMap = true;
+    self.currentUser = null;
     $scope.mdThemeColors = mdThemeColors;
 
-    this.addEvent = {};
+    self.addEvent = {};
 
-    this.categoriesPromise = $http.get('/api/categories')
+    self.categoriesPromise = $http.get('/api/categories')
       .then(function(response) {
         self.categories = response.data.results;
         self.categoriesDict = {}
@@ -45,12 +64,12 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
         self.updateMapPins();
     });
 
-    this.loadCategories = function() {
+    self.loadCategories = function() {
       return this.categoriesPromise;
     }
 
     self.setDefaultEventParams = function () {
-      self.addEvent.params = {
+      this.addEvent.params = {
         private: true,
         tags: []
       };
@@ -61,6 +80,15 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
     };
     $scope.logout = function() {
       $window.location.href = '/api-auth/logout/?next=/';
+    }
+
+    self.fetchCurrentUser = function() {
+      $http.get('api/users/profile')
+        .then(function(response){
+          self.currentUser = response.data
+        }, function(error){
+          self.currentUser = null;
+        })
     }
 
     self.toggleAddEvent = function() {
@@ -76,17 +104,63 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
       this.setDefaultEventParams();
     };
 
+    self.formatDateForApi = function(date, time) {
+        return date.format("YYYY-MM-DD") + "T" + time.format("HH:mm") + "+08:00";
+    };
+
+    self.parseDateTime = function(dateStr, timeStr) {
+      var parts = [moment(dateStr), moment(timeStr.toLowerCase(), ['hh:mm a','hh:mma','hha','ha','hh a', 'h a'])];
+      for (var i in parts) {
+        var part = parts[i];
+        if (!part.isValid()) {
+          return null;
+        }
+      }
+      return parts;
+    }
+
+    self.parseErrors = function(responseErrors) {
+      var errors = [];
+      for (key in responseErrors) {
+        errors = errors.concat(responseErrors[key]);
+      }
+      return errors;
+    }
+
     self.saveEvent = function() {
-      //TODO: save
-      console.log('saveEvent');
-      console.log($scope.params);
-      var newEvent = new Event(self.addEvent.params);
+      var data = angular.extend({}, self.addEvent.params);
+      if (!data.startDate || !data.startTime || !data.endDate || !data.endTime) {
+        self.addEvent.errors = {non_field_errors: ['Please specify start and end date and time.']};
+        return;
+      }
+      if (data.startDate) {
+        var parts = self.parseDateTime(data.startDate, data.startTime);
+        if (!parts) {
+          self.addEvent.errors = {non_field_errors: ['Please specify valid start date and time.']};
+          return;
+        }
+        delete data.startDate;
+        delete data.startTime;
+        data.start = self.formatDateForApi(parts[0], parts[1]);
+      }
+      if (data.endDate) {
+        var parts = self.parseDateTime(data.endDate, data.endTime);
+        if (!parts) {
+          self.addEvent.errors = {non_field_errors: ['Please specify valid end date and time.']};
+          return;
+        }
+        delete data.endDate;
+        delete data.endTime;
+        data.end = self.formatDateForApi(parts[0], parts[1]);
+      }
+      var newEvent = new Event(data);
       var createEvent = newEvent.$save();
       createEvent.then(function(created) {
         console.log({created: created});
         self.hideAddEvent();
-      }, function() {
-        console.log('failed!');
+        self.updateMapPins();
+      }, function(reject) {
+        self.addEvent.errors = reject.data;
       });
     };
 
@@ -134,14 +208,15 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
     };
 
     self.listEvents = function() {
-      if (!self.allEvents) {
-        $http.get('/api/events')
-        .then(function(response) {
-          self.allEvents = response.data.results;
+      // if (!self.allEvents) {
+        Event.query('/api/events').$promise
+        .then(function(events) {
+          console.log(events);
+          self.allEvents = events.results;
         }, function(error) {
           //TODO: error
         })
-      }
+      // }
     };
 
     self.showEvent = function(event, selectedEvent) {
@@ -160,6 +235,7 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
 
     self.setDefaultEventParams();
     self.loadCategories();
+    self.fetchCurrentUser();
   }
 ])
 
