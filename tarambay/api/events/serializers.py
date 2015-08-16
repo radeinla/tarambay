@@ -61,8 +61,8 @@ class CreateEventSerializer(EventSerializer):
                 raise serializers.ValidationError(_("That is not a valid location."))
         if start and end:
             if end <= start:
-            raise serializers.ValidationError("The end date and time must be \
-                after the start date and time")
+                raise serializers.ValidationError("The end date and time must be \
+                    after the start date and time")
         elif not self.partial:
             latitude = data.get('latitude', None)
             longitude = data.get('longitude', None)
