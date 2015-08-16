@@ -9,25 +9,34 @@
 				'ng-init':'tarambay.viewAsMap=true'}
 		<md-toolbar layout="row" class="md-primary md-hue-2">
 			%div{class:"md-toolbar-tools header"}
+				%div
+					<md-fab-speed-dial md-direction='right' class='md-scale'>
+						<md-fab-trigger>
+							<md-button aria-label="view" class="md-fab md-primary md-hue-2">
+								View
+							</md-button>
+						</md-fab-trigger>
+						<md-fab-actions>
+							<md-button class="md-fab md-primary md-hue-2" title="view map" aria-label="view map" ng-click="tarambay.viewAsMap=true;tarambay.updateMapPins()">
+								<md-icon md-svg-src="/static/img/icons/map-marker.svg"></md-icon>
+							</md-button>
+							<md-button class="md-fab md-primary md-hue-2" title="view list" aria-label="view list" 
+									ng-click="tarambay.viewAsMap=false;tarambay.listEvents()">
+								<md-icon md-svg-src="/static/img/icons/view-list.svg"></md-icon>
+							</md-button>
+						</md-fab-actions>
+					</md-fab-speed-dial>
+				%span{flex:None}
 				%h1{class:'title'}
 					Tarambay!
 				%span{flex:None}
-				<md-fab-speed-dial md-direction='left' class='md-scale'>
-					<md-fab-trigger>
-						<md-button aria-label="view" class="md-fab md-primary md-hue-2">
-							View
-						</md-button>
-					</md-fab-trigger>
-					<md-fab-actions>
-						<md-button class="md-fab md-primary md-hue-2" title="view map" aria-label="view map" ng-click="tarambay.viewAsMap=true;tarambay.updateMapPins()">
-							<md-icon md-svg-src="/static/img/icons/map-marker.svg"></md-icon>
-						</md-button>
-						<md-button class="md-fab md-primary md-hue-2" title="view list" aria-label="view list" 
-								ng-click="tarambay.viewAsMap=false;tarambay.listEvents()">
-							<md-icon md-svg-src="/static/img/icons/view-list.svg"></md-icon>
-						</md-button>
-					</md-fab-actions>
-				</mb-fab-speed-dial>
+				%div{class:'login-container'}
+					<md-button class="md-fab md-primary md-hue-2" title="Logout" aria-label="logout" ng-click="logout()" ng-if="currentUser">
+						<md-icon md-svg-src="/static/img/icons/logout.svg"></md-icon>
+					</md-button>
+					<md-button class="md-fab md-primary md-hue-2" title="Login" aria-label="login" ng-click="login()" ng-if="!currentUser">
+						<md-icon md-svg-src="/static/img/icons/login.svg"></md-icon>
+					</md-button>
 		</md-toolbar>
 		%div{'ng-hide':'!tarambay.viewAsMap'}
 			%div{layout:"row", 'layout-align':'center center'}
@@ -46,7 +55,7 @@
 							</md-card-content>
 						</md-card>
 						%div{flex:"5"}
-							<md-button class="md-fab" aria-label="Add Event" ng-click="tarambay.toggleAddEvent()">
+							<md-button class="md-fab" aria-label="Add Event" title="Add Event" ng-click="tarambay.toggleAddEvent()">
 								<md-icon md-svg-src="/static/img/icons/plus.svg"></md-icon>
 							</md-button>
 
@@ -76,7 +85,7 @@
 											%input{ng-model:"tarambay.addEvent.params.title", required:None}
 										</md-input-container>
 										<md-input-container>
-											%input{ng-model:"tarambay.addEvent.params.location", required:None, 'places-auto-complete':True}
+											%input{ng-model:"tarambay.addEvent.params.location", required:None, 'places-auto-complete':True, 'aria-label': 'Enter a Location'}
 										</md-input-container>
 										%div{layout:'row'}
 											<j-md-datepicker flex ng-model="tarambay.addEvent.params.startDate" placeholder="Start Date" orientation="landscape">
@@ -125,7 +134,7 @@
 					<md-card-content>
 						%div{layout:"row", layout-align:"center center"}
 							%div{class:"event-list-map"}
-								TEMP MAP
+								TEMP MAP (location display)
 						%div{layout:"row", layout-align:"center center"}
 							<md-button class="md-raised md-primary md-hue-1" ng-click="tarambay.showEvent($event, event)">
 								View Event Details
@@ -148,11 +157,11 @@
 				<md-dialog-content>
 					%div
 						%p
-							Category: {{getCategoryName(selectedEvent.category)}}
+							Category: {{eventCategory}}
 						%p
 							Description: {{selectedEvent.description}}
 						%p
-							Event Started By: {{getUserDisplayName(selectedEvent.admin)}}
+							Event Started By: {{eventCreator}}
 						%p
 							Start Time: {{selectedEvent.start | date:"MM/dd/yyyy 'at' h:mma"}}
 						%p
