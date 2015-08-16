@@ -20,3 +20,11 @@
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
 }
+
+.event-dialog {
+  min-width: 400px;
+}
+
+.event-detail-label {
+  padding: 10px;
+}

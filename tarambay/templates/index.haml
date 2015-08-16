@@ -168,7 +168,7 @@
 			</md-content>
 
 		%script{type:"text/ng-template", id:"showEventDialog.tmpl.html"}
-			<md-dialog aria-label="Show Event {{selectedEvent.title}}">
+			<md-dialog aria-label="Show Event {{selectedEvent.title}}" class="event-dialog">
 				<md-toolbar class="md-primary">
 					<div class="md-toolbar-tools">
 						<h2>Event: {{selectedEvent.title}}</h2>
@@ -180,16 +180,53 @@
 				</md-toolbar>
 				<md-dialog-content>
 					%div
-						%p
-							Category: {{eventCategory}}
-						%p
-							Description: {{selectedEvent.description}}
-						%p
-							Event Started By: {{eventCreator}}
-						%p
-							Start Time: {{selectedEvent.start | date:"MM/dd/yyyy 'at' h:mma"}}
-						%p
-							End Time: {{selectedEvent.end | date:"MM/dd/yyyy 'at' h:mma"}}
+						<md-list>
+							<md-list-item>
+								%div{class:'event-detail-label md-body-2'}
+									Category: 
+								%div{class:"md-list-item-text md-body-1"}
+									{{eventCategory}}
+								<md-divider></md-divider>
+							</md-list-item>
+							<md-list-item>
+								%div{class:'event-detail-label md-body-2'}
+									Description: 
+								%div{class:"md-list-item-text md-body-1"}
+									{{selectedEvent.description}}
+								<md-divider></md-divider>
+							</md-list-item>
+							<md-list-item>
+								%div{class:'event-detail-label md-body-2'}
+									Event Started By: 
+								%div{class:"md-list-item-text md-body-1"}
+									{{eventCreator}}
+								<md-divider></md-divider>
+							</md-list-item>
+							<md-list-item>
+								%div{class:'event-detail-label md-body-2'}
+									Start Time: 
+								%div{class:"md-list-item-text md-body-1"}
+									{{selectedEvent.start | date:"MM/dd/yyyy 'at' h:mma"}}
+								<md-divider></md-divider>
+							</md-list-item>
+							<md-list-item>
+								%div{class:'event-detail-label md-body-2'}
+									End Time: 
+								%div{class:"md-list-item-text md-body-1"}
+									{{selectedEvent.end | date:"MM/dd/yyyy 'at' h:mma"}}
+								<md-divider ng-if='selectedEvent.formattedTags.length > 0'></md-divider>
+							</md-list-item>
+						</md-list>
+						%div{'layout-padding':None, 'ng-if':'selectedEvent.formattedTags.length > 0'}
+							%div
+								%div{class:'event-detail-label md-body-2'}
+									Tags: 
+								<br/>
+								<md-chips ng-model="selectedEvent.formattedTags" readonly="true">
+									<md-chip-template>
+										<strong>{{$chip}}</strong>
+									</md-chip-template>
+								</md-chips>
 				</md-dialog-content>
 				%div{class:"md-actions", layout:"row"}
 					<md-button class="md-raised md-primary md-hue-1" ng-click="joinEvent(selectedEvent)">

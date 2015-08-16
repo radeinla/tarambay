@@ -226,6 +226,14 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
 
 function ShowEventController($scope, $mdDialog, $http, selectedEvent, categoriesDict) {
   $scope.selectedEvent = selectedEvent;
+  $scope.selectedEvent.formattedTags = [];
+  var tags = selectedEvent.tags.split(',')
+  for (var i=0; i<tags.length; i++) {
+    var tag = tags[i].trim();
+   if (tag.length > 0) {
+      $scope.selectedEvent.formattedTags.push(tag);
+    }
+  }
 
   $scope.closeShowEventDialog = function() {
     $mdDialog.cancel();
