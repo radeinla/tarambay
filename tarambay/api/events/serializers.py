@@ -1,9 +1,12 @@
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from pygeocoder import Geocoder
 from rest_framework import serializers
 
 from api.users.serializers import InvitedSerializer
 from tarambay.events.models import Category, Event
+from tarambay.users.models import Invited, User
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
@@ -90,3 +93,28 @@ class InviteEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ('invited',)
+
+    def update(self, instance, validated_data):
+        # invited is a comma-separated string of either usernames or emails
+        # disregards input that is not a valid username or email
+        invited_list = validated_data['invited'].split(", ")
+        for item in invited_list:
+            user = None
+            email = None
+            try:
+                user = User.objects.get(username=item)
+            except User.DoesNotExist:
+                try:
+                    validate_email(item)
+                    email = item
+                except ValidationError:
+                    continue
+            if email:
+                try:
+                    user = User.objects.get(email=email)
+                except User.DoesNotExist:
+                    invited, created = Invited.objects.get_or_create(email=email)
+            if user:
+                invited, created = Invited.objects.get_or_create(user=user)
+            instance.invited.add(invited)
+        return instance
