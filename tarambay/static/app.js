@@ -12,11 +12,29 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
   $resourceProvider.defaults.stripTrailingSlashes = false;
 }])
 .factory('Event', function($resource) {
-  return $resource('/api/events/:id', {}, {
+  var Event = $resource('/api/events/:id', {}, {
     query: {
-      isArray: false
+      isArray: false,
+      transformResponse: [function(data, getHeaders) {
+        return angular.fromJson(data);
+      }, function(data, getHeaders) {
+        var results = [];
+        for (var idx in data.results) {
+          var event = data.results[idx];
+          results.push(new Event(event));
+        }
+        data.results = results;
+        return data;
+      }],
     }
   });
+
+  Event.prototype.getCoordinates = function(){
+    console.log(this);
+    return [parseFloat(this.latitude), parseFloat(this.longitude)];
+  };
+
+  return Event;
 })
 
 .controller('tarambayAppController', [
@@ -180,14 +198,15 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
     };
 
     self.listEvents = function() {
-      if (!self.allEvents) {
-        $http.get('/api/events')
-        .then(function(response) {
-          self.allEvents = response.data.results;
+      // if (!self.allEvents) {
+        Event.query('/api/events').$promise
+        .then(function(events) {
+          console.log(events);
+          self.allEvents = events.results;
         }, function(error) {
           //TODO: error
         })
-      }
+      // }
     };
 
     self.showEvent = function(event, selectedEvent) {
