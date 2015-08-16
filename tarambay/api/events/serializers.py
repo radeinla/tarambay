@@ -1,7 +1,8 @@
+import geocoder
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
-from pygeocoder import Geocoder
+# from pygeocoder import Geocoder
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
@@ -69,11 +70,11 @@ class CreateEventSerializer(EventSerializer):
         start = data.get('start', None)
         end = data.get('end', None)
         if location:
-            result = Geocoder.geocode(location)
-            if result.valid_address:
-                data['latitude'] = result.latitude
-                data['longitude'] = result.longitude
-                data['location'] = result.formatted_address
+            result = geocoder.google(location)
+            if result.ok:
+                data['latitude'] = result.lat
+                data['longitude'] = result.lng
+                data['location'] = result.location
             else:
                 raise serializers.ValidationError(_("That is not a valid location."))
         if start and end:
