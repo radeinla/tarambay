@@ -18,9 +18,10 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
     }
   });
 })
+
 .controller('tarambayAppController', [
-  '$scope', '$mdDialog', 'mdThemeColors', '$http', '$timeout', 'Event',
-  function($scope, $mdDialog, mdThemeColors, $http, $timeout, Event) {
+  '$scope', '$mdDialog', 'mdThemeColors', '$http', '$window', 'Event',
+  function($scope, $mdDialog, mdThemeColors, $http, $window, Event) {
     var self = this;
     self.viewAsMap = true;
     $scope.mdThemeColors = mdThemeColors;
@@ -53,6 +54,13 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
         private: true,
         tags: []
       };
+    }
+
+    $scope.login = function() {
+      $window.location.href = '/api-auth/login';
+    };
+    $scope.logout = function() {
+      $window.location.href = '/api-auth/logout/?next=/';
     }
 
     self.toggleAddEvent = function() {
@@ -159,7 +167,7 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
 
 });
 
-function ShowEventController($scope, $mdDialog, selectedEvent, categoriesDict) {
+function ShowEventController($scope, $mdDialog, $http, selectedEvent, categoriesDict) {
   $scope.selectedEvent = selectedEvent;
 
   $scope.closeShowEventDialog = function() {
@@ -173,18 +181,31 @@ function ShowEventController($scope, $mdDialog, selectedEvent, categoriesDict) {
     $mdDialog.hide();
   };
 
-  $scope.getCategoryName = function(categoryLink) {
-    console.log('getCategoryName', categoryLink);
+  this.getCategoryName = function(categoryLink) {
     //TODO: ayusin? pampabilis lang to
     var id = categoryLink.split('/')[5];
     if (id in categoriesDict) {
-      return categoriesDict[id];
+      $scope.eventCategory = categoriesDict[id];
+    } else {
+      $http.get(categoryLink)
+        .then(function(response) {
+          $scope.eventCategory = response.data.name;
+        }, function(error) {
+          //TODO: error
+        });
     }
-    else return null;
   };
 
-  $scope.getUserDisplayName = function(userLink) {
-
+  this.getUserDisplayName = function(userLink) {
+    $http.get(userLink)
+      .then(function(response) {
+        $scope.eventCreator = response.data.username;
+      }, function(error) {
+        //TODO: error
+      });
   }
+
+  this.getCategoryName(selectedEvent.category);
+  this.getUserDisplayName(selectedEvent.admin);
 };
 
