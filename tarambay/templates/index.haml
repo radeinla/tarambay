@@ -90,6 +90,11 @@
 													%div{ng-message:None, ng-repeat: "error in tarambay.addEvent.errors.title"}
 														{{ error }}
 											</md-input-container>
+											<md-input-container ng-class="{'md-input-invalid': tarambay.addEvent.errors.location}">
+												%input{ng-model:"tarambay.addEvent.params.location", required:None, 'places-auto-complete':True}
+												%div.errors{ng-messages:None}
+													%div{ng-message:None, ng-repeat: "error in tarambay.addEvent.errors.location"}
+														{{ error }}
 										%div{layout:'row'}
 											<j-md-datepicker flex ng-model="tarambay.addEvent.params.startDate" placeholder="Start Date" orientation="landscape">
 											</j-md-datepicker>
