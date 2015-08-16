@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from pygeocoder import Geocoder
 from rest_framework import serializers
+from rest_framework.reverse import reverse
 
 from api.users.serializers import InvitedSerializer
 from tarambay.events.models import Category, Event
@@ -23,16 +24,21 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 class EventSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.UUIDField(source='uuid', read_only=True)
     invited = InvitedSerializer(many=True)
+    invite_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Event
         fields = ('id', 'self', 'category', 'title', 'description', 'latitude',
-                  'longitude', 'start', 'end', 'admin', 'tags', 'invited', 'private')
+                  'longitude', 'start', 'end', 'admin', 'tags', 'invited',
+                  'invite_url', 'private')
         extra_kwargs = {
             'self': {'lookup_field': 'uuid'},
             'admin': {'lookup_field': 'uuid'},
             'category': {'lookup_field': 'uuid'},
         }
+
+    def get_invite_url(self, obj):
+        return reverse('event-invite', args=[obj.uuid], request=self.context['request'])
 
 
 class CreateEventSerializer(EventSerializer):
