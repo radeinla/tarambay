@@ -34,6 +34,18 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
     return [parseFloat(this.latitude), parseFloat(this.longitude)];
   };
 
+  Event.prototype.join = function() {
+    var Join = $resource('/api/events/'+this.id+'/join', {}, {
+      update: {
+        method: 'PUT',
+      }
+    });
+    var join = new Join({id: this.id, join: true});
+    return join.$update();
+  };
+
+  (new Event()).join();
+
   return Event;
 })
 
@@ -170,8 +182,9 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
     };
 
     self.updateMapPins = function() {
-      $http.get('/api/events')
-        .then(function(response) {
+      Event.query().$promise
+        .then(function(events) {
+          var response = {data: {results: events.results}};
           console.log(response.data.results)
           self.allEvents = response.data.results;
           self.allEventsMarkers = [];
@@ -243,7 +256,7 @@ angular.module('tarambayApp', ['ngMaterial', 'mdThemeColors', 'JDatePicker', 'ng
 
 });
 
-function ShowEventController($scope, $mdDialog, $http, selectedEvent, categoriesDict) {
+function ShowEventController($scope, $mdDialog, $http, selectedEvent, categoriesDict, Event) {
   $scope.selectedEvent = selectedEvent;
 
   $scope.closeShowEventDialog = function() {
@@ -252,8 +265,10 @@ function ShowEventController($scope, $mdDialog, $http, selectedEvent, categories
 
   $scope.joinEvent = function(event) {
     console.log('joinEvent', event);
-    //TODO: join event
-    //TODO: show toast: successful/error
+    console.log(event);
+    (new Event(event)).join().then(function() {
+      console.log('joined!');
+    });
     $mdDialog.hide();
   };
 
