@@ -1,7 +1,7 @@
 from django.conf.urls import include, url
 from rest_framework import routers
 
-from api.events.views import CategoryViewSet, EventViewSet
+from api.events.views import CategoryViewSet, EventViewSet, EventInviteView
 from api.users.views import ProfileView, RegisterView, UserViewSet
 
 
@@ -12,6 +12,7 @@ router.register('users', UserViewSet)
 
 
 urlpatterns = [
+    url(r'^events/(?P<uuid>[^/.]+)/invited/$', EventInviteView.as_view(), name='event-invite'),
     url(r'^users/profile', ProfileView.as_view(), name='user-profile'),
     url(r'^users/register', RegisterView.as_view()),
     url(r'^', include(router.urls)),

@@ -31,3 +31,8 @@ class IsAnonUser(permissions.BasePermission):
             return False
         else:
             return True
+
+
+class IsObjectAdmin(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.admin == request.user
