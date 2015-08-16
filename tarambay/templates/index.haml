@@ -38,74 +38,6 @@
 						<md-icon md-svg-src="/static/img/icons/login.svg"></md-icon>
 					</md-button>
 		</md-toolbar>
-<<<<<<< HEAD
-		%div{layout:"row", 'layout-align':'center center'}
-			%div#map-background{'map':None, 'center':"14,121", 'zoom':"8"}
-			%div{layout:"column", flex:"100", class:"search-container"}
-				%div{layout:"row", 'layout-align':'center center'}
-					<md-card flex="75" >
-						<md-card-content>
-							%div{layout:'column', 'ng-controller':'SearchFormController as searchForm'}
-								<md-input-container flex class="md-icon-float">
-									%label
-										Search Events
-									<md-icon md-svg-src="/static/img/icons/magnify.svg" class="search"></md-icon>
-									%input{'ng-model':"searchForm.params.query"}
-								</md-input-container>
-						</md-card-content>
-					</md-card>
-					%div{flex:"5"}
-						<md-button class="md-fab" aria-label="Add Event" ng-click="tarambay.toggleAddEvent()">
-							<md-icon md-svg-src="/static/img/icons/plus.svg"></md-icon>
-						</md-button>
-
-		%div{layout:"row", 'layout-align':"center center", class:'add-event-container ng-hide', 'ng-show':"tarambay.addEventVisible"}
-			%div{layout:"column", 'layout-fill':None, flex:"70"}
-				<md-card>
-					<md-card-content>
-						%form{ng-submit:"tarambay.saveEvent()"}
-							<md-toolbar>
-								%div{class:"md-toolbar-tools"}
-									%h2
-										Add Event
-									%span{flex:None}
-									<md-button class="md-icon-button" type="button" ng-click="tarambay.cancelAddEvent()">
-										<md-icon md-svg-src="/static/img/icons/close.svg" aria-label="Close dialog"></md-icon>
-									</md-button>
-							</md-toolbar>
-							<md-dialog-content class="selectdemoOptionsWithAsyncSearch" >
-								%div{layout:'column'}
-									<md-input-container ng-class="{'md-input-invalid': tarambay.addEvent.errors.non_field_errors}">
-										%div.errors{ng-messages:None}
-											%div{ng-message:None, ng-repeat: 'error in tarambay.addEvent.errors.non_field_errors'}
-												{{error}}
-									</md-input-container>
-									<md-input-container ng-class="{'md-input-invalid': tarambay.addEvent.errors.category}">
-										<md-select ng-model="tarambay.addEvent.params.category" placeholder="Category" md-on-open="tarambay.loadCategories()" required>
-											<md-option ng-value="category.self" data-ng-repeat="category in tarambay.categories">{{category.name}}</md-option>
-										</md-select>
-										<ng-messages>
-											<div ng-message ng-repeat="error in tarambay.addEvent.errors.category">
-												{{ error }}
-											</div>
-										</ng-messages>
-									</md-input-container>
-									<md-input-container ng-class="{'md-input-invalid': tarambay.addEvent.errors.category}">
-										%label
-											Title
-										%input{ng-model:"tarambay.addEvent.params.title", required:None}
-										%div.errors{ng-messages:None}
-											%div{ng-message:None, ng-repeat: "error in tarambay.addEvent.errors.title"}
-												{{ error }}
-									</md-input-container>
-									<md-input-container ng-class="{'md-input-invalid': tarambay.addEvent.errors.location}">
-										%label
-											Enter a Location
-										%input{ng-model:"tarambay.addEvent.params.location", required:None, 'places-auto-complete':True}
-										%div.errors{ng-messages:None}
-											%div{ng-message:None, ng-repeat: "error in tarambay.addEvent.errors.location"}
-												{{ error }}
-=======
 		%div{'ng-hide':'!tarambay.viewAsMap'}
 			%div{layout:"row", 'layout-align':'center center'}
 				%div#map-background{'map':None, 'center':"14.65,121.1", 'zoom':"13"}
@@ -119,15 +51,12 @@
 											Search Events
 										<md-icon md-svg-src="/static/img/icons/magnify.svg" class="search"></md-icon>
 										%input{'ng-model':"searchForm.params.query"}
->>>>>>> a54aff2308316c91dcd44bb31cae5e26b84c0c50
-									</md-input-container>
-							</md-card-content>
+							</md-content>
 						</md-card>
 						%div{flex:"5"}
-							<md-button class="md-fab" aria-label="Add Event" title="Add Event" ng-click="tarambay.toggleAddEvent()">
+							<md-button class="md-fab" aria-label="Add Event" ng-click="tarambay.toggleAddEvent()">
 								<md-icon md-svg-src="/static/img/icons/plus.svg"></md-icon>
 							</md-button>
-
 			%div{layout:"row", 'layout-align':"center center", class:'add-event-container ng-hide', 'ng-show':"tarambay.addEventVisible",
 				'md-swipe-left':"tarambay.cancelAddEvent()", 'md-swipe-right':"tarambay.cancelAddEvent()"}
 				%div{layout:"column", 'layout-fill':None, flex:"70"}
@@ -145,15 +74,30 @@
 							%form{ng-submit:"tarambay.saveEvent()"}
 								<md-dialog-content class="selectdemoOptionsWithAsyncSearch" >
 									%div{layout:'column'}
+										<md-input-container ng-class="{'md-input-invalid': tarambay.addEvent.errors.non_field_errors}">
+											%div.errors{ng-messages:None}
+												%div{ng-message:None, ng-repeat: 'error in tarambay.addEvent.errors.non_field_errors'}
+													{{error}}
+										</md-input-container>
 										<md-select ng-model="tarambay.addEvent.params.category" placeholder="Category" md-on-open="tarambay.loadCategories()" required>
 											<md-option ng-value="category.self" data-ng-repeat="category in tarambay.categories">{{category.name}}</md-option>
 										</md-select>
-										<md-input-container>
+										<md-input-container ng-class="{'md-input-invalid': tarambay.addEvent.errors.category}">
 											%label
 												Title
 											%input{ng-model:"tarambay.addEvent.params.title", required:None}
+											%div.errors{ng-messages:None}
+												%div{ng-message:None, ng-repeat: "error in tarambay.addEvent.errors.title"}
+													{{ error }}
 										</md-input-container>
-<<<<<<< HEAD
+									%div{layout:'row'}
+										<j-md-datepicker flex ng-model="tarambay.addEvent.params.startDate" placeholder="Start Date" orientation="landscape">
+										</j-md-datepicker>
+										<md-input-container flex>
+											%label
+												End Time
+											%input{ng-model:"tarambay.addEvent.params.startTime", required:None}
+										</md-input-container>
 										<md-input-container ng-class="{'md-input-invalid': tarambay.addEvent.errors.start}">
 											%div.errors{ng-messages:None}
 												%div{ng-message:None, ng-repeat: "error in tarambay.addEvent.errors.start"}
@@ -181,39 +125,7 @@
 											<md-radio-button data-ng-value="true" class="md-primary">Private</md-radio-button>
 											<md-radio-button data-ng-value="false">Public</md-radio-button>
 										</md-radio-group>
-							</md-dialog-content>
-=======
-										<md-input-container>
-											%input{ng-model:"tarambay.addEvent.params.location", required:None, 'places-auto-complete':True, 'aria-label': 'Enter a Location'}
-										</md-input-container>
-										%div{layout:'row'}
-											<j-md-datepicker flex ng-model="tarambay.addEvent.params.startDate" placeholder="Start Date" orientation="landscape">
-											</j-md-datepicker>
-											<md-input-container flex>
-												%label
-													Start Time
-												%input{ng-model:"tarambay.addEvent.params.startTime", required:None}
-											</md-input-container>
-										%div{layout:'row'}
-											<j-md-datepicker flex ng-model="tarambay.addEvent.params.endDate" placeholder="End Date" orientation="landscape">
-											</j-md-datepicker>
-											<md-input-container flex>
-												%label
-													End Time
-												%input{ng-model:"tarambay.addEvent.params.endTime", required:None}
-											</md-input-container>
-										<md-chips ng-model="tarambay.addEvent.params.tags" placeholder="Enter a tag" delete-button-label="Remove Tag" delete-hint="Press delete to remove tag" secondary-placeholder="Enter a tag">
-										</md-chips>
-										%div
-											%p
-												Set privacy:
-											<md-radio-group ng-model="tarambay.addEvent.params.private">
-												<md-radio-button data-ng-value="true" class="md-primary">Private</md-radio-button>
-												<md-radio-button data-ng-value="false">Public</md-radio-button>
-											</md-radio-group>
 								</md-dialog-content>
->>>>>>> a54aff2308316c91dcd44bb31cae5e26b84c0c50
-
 								%div{class:"md-actions", layout:"row"}
 									<span flex></span>
 									<md-button type="button" ng-click="tarambay.cancelAddEvent()">
@@ -222,6 +134,7 @@
 									<md-button class="md-raised md-primary md-hue-1">
 										Save
 									</md-button>
+
 						</md-card-content>
 					</md-card>
 
